@@ -183,7 +183,7 @@ const projects = [
                 class="absolute inset-[22%_18%] rounded-full border border-white/10"
               ></div>
               <div
-                class="absolute left-1/2 top-1/2 grid h-190 w-190 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.17),rgba(255,255,255,0.06))] text-5xl font-extrabold tracking-[0.08em] text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] max-[720px]:h-150 max-[720px]:w-150   max-[720px]:text-[2.4rem]"
+                class="absolute left-1/2 top-1/2 grid h-190 w-190 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.17),rgba(255,255,255,0.06))] text-5xl font-extrabold tracking-[0.08em] text-white/95 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] max-[720px]:h-150 max-[720px]:w-150 max-[720px]:text-[2.4rem]"
               >
                 VK
               </div>
