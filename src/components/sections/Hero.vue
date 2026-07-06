@@ -145,7 +145,7 @@ const socials = computed(() => [
       </div>
 
       <div
-        class="flex flex-wrap gap-2.5 md:flex-col md:items-end"
+        class="md:flex flex-wrap gap-2.5 md:flex-col md:items-end hidden"
         aria-label="Social links"
         v-reveal="240"
       >
