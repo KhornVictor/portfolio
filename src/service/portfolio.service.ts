@@ -7,9 +7,8 @@ export interface Personal {
   email: string;
   phone: string;
   website: string;
-  telegram: string;
   summary: string;
-  location: { city: string; country: string };
+  location: { postalCode?: string; city: string; country: string; continent: string };
   profiles: { network: string; url: string }[];
 }
 

@@ -2,13 +2,14 @@
   "name": "Khorn Victor",
   "label": "Junior Full-Stack Developer",
   "email": "victorkhornkh@gmail.com",
-  "phone": "+855 XX XXX XXX",
-  "telegram": "https://t.me/KhornVictor",
+  "phone": "+855 81 323 442",
   "website": "https://portfolio-puce-nine-0oelx3s9cm.vercel.app",
   "summary": "A detail-oriented Junior Full-Stack Developer with a strong emphasis on backend engineering, robust database design, and clean architecture. Passionate about structuring scalable systems, normalizing data, and automating workflows.",
   "location": {
+    "postalCode": "12000",
     "city": "Phnom Penh",
-    "country": "Cambodia"
+    "country": "Cambodia",
+    "continent": "Asia"
   },
   "profiles": [
     {
@@ -18,6 +19,26 @@
     {
       "network": "LinkedIn",
       "url": "https://www.linkedin.com/in/khorn-victor-794a6635a"
+    },
+    {
+      "network": "Telegram",
+      "url": "https://t.me/KhornVictor"
+    },
+    {
+      "network": "Facebook",
+      "url": "https://www.facebook.com/khorn.victor.7"
+    },
+    {
+      "network": "Twitter",
+      "url": "https://twitter.com/KhornVictor"
+    },
+    {
+      "network": "Instagram",
+      "url": "https://www.instagram.com/khornvictor/"
+    },
+    {
+      "network": "Terminal",
+      "url": "https://www.terminaltemple.com/"
     }
   ]
 }

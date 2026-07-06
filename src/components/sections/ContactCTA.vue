@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ArrowIcon from "../ui/ArrowIcon.vue";
 
-defineProps<{ available: string; email: string; location: string }>();
+defineProps<{ available: string; phone: string; email: string; location: string }>();
 </script>
 
 <template>
@@ -28,10 +28,17 @@ defineProps<{ available: string; email: string; location: string }>();
       bring your ideas to life with clean architecture and reliable systems.
     </p>
 
-    <a class="btn btn-dark mt-8" :href="`mailto:${email}`" v-reveal="180">
-      Contact Me
-      <ArrowIcon :size="16" />
-    </a>
+    <div class="mt-6 flex flex-wrap justify-center gap-3" v-reveal="180">
+      <a class="btn btn-light mt-8" :href="`tel:${phone}`" v-reveal="180">
+        {{ phone }}
+        <ArrowIcon :size="16" />
+      </a>
+  
+      <a class="btn btn-dark mt-8" :href="`mailto:${email}`" v-reveal="180">
+        Contact Me
+        <ArrowIcon :size="16" />
+      </a>
+    </div>
 
     <p class="mt-6 text-xs uppercase tracking-widest text-ink/35" v-reveal="220">
       {{ email }} · {{ location }}

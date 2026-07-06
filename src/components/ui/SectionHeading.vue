@@ -10,7 +10,7 @@ defineProps<{
   <div class="relative">
     <!-- Faded oversized watermark -->
     <span
-      class="watermark absolute -top-4 left-0 -z-0 text-[clamp(3.5rem,11vw,9rem)]"
+      class="watermark absolute -top-4 left-0 z-0 text-[clamp(3.5rem,11vw,9rem)]"
       :class="dark ? 'watermark-light' : ''"
       aria-hidden="true"
       >{{ watermark }}</span

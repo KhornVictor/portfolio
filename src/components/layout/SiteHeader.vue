@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <header
-    class="flex items-center justify-between gap-4 px-4 pt-4 sm:px-7 sm:pt-6"
+    class="flex items-center z-50 justify-between gap-4 px-4 pt-4 sm:px-7 sm:pt-6"
   >
     <!-- Availability badge -->
     <span class="pill">
@@ -26,7 +26,7 @@ defineProps<{
 
     <!-- Center navigation -->
     <nav
-      class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-7 lg:flex"
+      class="absolute left-1/2 hidden z-100 -translate-x-1/2 items-center gap-7 lg:flex"
       aria-label="Primary"
     >
       <a
@@ -45,7 +45,7 @@ defineProps<{
     </nav>
 
     <!-- CTA -->
-    <a class="btn btn-dark py-2.5! px-4! text-sm" :href="talkHref">
+    <a class="btn btn-dark py-2.5! px-4! text-sm" target="_blank" :href="talkHref">
       Let's Talk
       <ArrowIcon :size="15" />
     </a>

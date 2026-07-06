@@ -7,6 +7,7 @@ import SelectedWork from "../sections/SelectedWork.vue";
 import Services from "../sections/Services.vue";
 import Experience from "../sections/Experience.vue";
 import ContactCTA from "../sections/ContactCTA.vue";
+// import FigmaCursor from "../ui/FigmaCursor.vue";
 
 const data = ref<Portfolio | null>(null);
 const failed = ref(false);
@@ -42,7 +43,7 @@ const navigation = computed(() => {
 
 const location = computed(() =>
   data.value
-    ? `${data.value.personal.location.city}, ${data.value.personal.location.country}`
+    ? `${data.value.personal.location.postalCode ? `${data.value.personal.location.postalCode} ` : ''}${data.value.personal.location.city}, ${data.value.personal.location.country} (${data.value.personal.location.continent})`
     : "",
 );
 
@@ -135,7 +136,7 @@ const year = new Date().getFullYear();
           <SiteHeader
             :navigation="navigation"
             :available="'Available for New Project'"
-            :talk-href="`mailto:${data.personal.email}`"
+            :talk-href="data.personal.profiles.find((p) => p.network === 'Telegram')?.url || '#'"
           />
           <Hero
             :name="data.personal.name"
@@ -146,6 +147,14 @@ const year = new Date().getFullYear();
             collaborate-href="#contact"
           />
         </section>
+
+        <!-- Figma cursor animation -->
+        <!-- <section
+          class="panel-soft grid place-items-center overflow-hidden px-5 py-12 sm:px-10 sm:py-16"
+          v-reveal:panel
+        >
+          <FigmaCursor class="w-full max-w-140" />
+        </section> -->
 
         <!-- Selected Work -->
         <section
@@ -187,6 +196,7 @@ const year = new Date().getFullYear();
             :available="'Available for New Project'"
             :email="data.personal.email"
             :location="location"
+            :phone="data.personal.phone"
           />
         </section>
 
