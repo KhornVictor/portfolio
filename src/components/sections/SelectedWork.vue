@@ -47,7 +47,7 @@ const visible = computed(() =>
       </button>
     </div>
 
-    <a class="btn btn-light !py-2.5 text-sm" href="#contact">
+    <a class="btn btn-light py-2.5! text-sm" href="#contact">
       View All Work
       <ArrowIcon :size="15" />
     </a>
