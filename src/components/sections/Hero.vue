@@ -26,7 +26,7 @@ const socials = computed(() => [
 </script>
 
 <template>
-  <div class="relative px-4 pb-0 pt-6 sm:px-8">
+  <div class="relative flex flex-1 flex-col px-4 pb-0 pt-6 sm:px-8 lg:px-12 lg:pt-10">
     <!-- Giant name -->
     <h1
       class="display relative z-20 flex flex-col text-center text-[clamp(2.4rem,9vw,7.4rem)] leading-[0.9] sm:block"
@@ -37,31 +37,31 @@ const socials = computed(() => [
     </h1>
 
     <!-- Portrait -->
-    <div class="relative z-10 mt-[-3vw] flex justify-center">
-      <div class="relative w-[min(78%,420px)]">
+    <div class="relative z-10 mt-[-3vw] flex flex-1 md:scale-200 lg:scale-150 2xl:scale-175 pb-10 w-full items-center justify-center">
+      <div class="relative w-[min(100%,420px)]">
         <img
           :src="avatar"
           :alt="name"
-          class="relative z-10 w-full select-none object-contain grayscale filter-[grayscale(1)_contrast(1.02)] drop-shadow-[0_30px_50px_rgba(0,0,0,0.18)]"
+          class="relative z-10 w-full select-none object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.18)]"
           draggable="false"
           v-reveal="120"
         />
         <!-- soft fade so the photo melts into the panel -->
         <div
-          class="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-24 bg-linear-to-t from-[#fbfbfc] to-transparent"
+          class="pointer-events-none absolute inset-x-0 bottom-0 w-full z-20 h-24 bg-linear-to-t from-[#fbfbfc] to-transparent"
         ></div>
       </div>
     </div>
 
     <!-- Overlay: role/description (left) + socials (right) -->
     <div
-      class="relative z-30 mt-2 flex flex-col items-stretch justify-between gap-8 pb-10 md:absolute md:inset-x-8 md:bottom-10 md:mt-0 md:flex-row md:items-end"
+      class="relative z-30 mt-2 flex flex-col items-stretch justify-between gap-6 sm:gap-8 md:absolute md:inset-x-8 md:bottom-1 md:mt-0 md:flex-row md:items-end lg:inset-x-12 lg:bottom-12"
     >
-      <div class="max-w-full md:max-w-sm" v-reveal="180">
-        <h2 class="display text-xl tracking-tight sm:text-[1.7rem]">
+      <div class="max-w-full md:max-w-sm lg:max-w-md md:bg-[#fbfbfc] md:p-10 rounded-2xl md:shadow-[0px_0px_100px_rgba(0,0,0,0.1)]" v-reveal="180">
+        <h2 class="display text-xl tracking-tight sm:text-[1.7rem] lg:text-[2rem]">
           {{ role }}
         </h2>
-        <p class="mt-2 text-sm leading-relaxed text-ink/60">
+        <p class="mt-2 text-sm leading-relaxed text-ink/60 sm:text-base">
           {{ description }}
         </p>
         <a class="btn btn-dark mt-5" :href="collaborateHref">

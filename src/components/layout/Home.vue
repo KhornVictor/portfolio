@@ -20,39 +20,11 @@ onMounted(async () => {
   }
 });
 
-// Services are curated to reflect Khorn's backend-focused skill set.
-const services = [
-  {
-    title: "Backend Development",
-    description:
-      "Server-side applications with NestJS, Express and Node.js — structured around clean, feature-driven architecture with custom pipes and decorators.",
-    tags: ["NestJS", "Express.js", "Node.js", "TypeScript"],
-  },
-  {
-    title: "Database Design",
-    description:
-      "Relational schema design and normalization up to 3NF/BCNF using MySQL, Prisma ORM and DBML to keep data consistent, fast and redundancy-free.",
-    tags: ["MySQL", "Prisma ORM", "DBML", "Normalization"],
-  },
-  {
-    title: "API & Integration",
-    description:
-      "Type-safe REST APIs and third-party integrations, including real-time automation with the Telegram Bot API and secure secret handling.",
-    tags: ["REST API", "Prisma", "Telegram API"],
-  },
-  {
-    title: "DevOps & Automation",
-    description:
-      "CI/CD pipelines with GitHub Actions and YAML workflows, plus automated notifications that keep repositories and teams in sync.",
-    tags: ["GitHub Actions", "YAML", "CI/CD", "Git"],
-  },
-];
-
 const navigation = computed(() => {
   if (!data.value) return [];
   return [
     { label: "Work", href: "#work", count: String(data.value.projects.length) },
-    { label: "Service", href: "#service", count: String(services.length) },
+    { label: "Service", href: "#service", count: String(data.value.services.length) },
     {
       label: "Experience",
       href: "#experience",
@@ -100,7 +72,11 @@ const year = new Date().getFullYear();
 
       <div v-else-if="data" class="space-y-5 sm:space-y-6">
         <!-- Hero -->
-        <section id="home" class="panel overflow-hidden pb-2" v-reveal:panel>
+        <section
+          id="home"
+          class="panel flex min-h-[calc(100vh-1.5rem)] flex-col overflow-hidden pb-2 sm:min-h-[calc(100vh-2.5rem)]"
+          v-reveal:panel
+        >
           <SiteHeader
             :navigation="navigation"
             :available="'Available for New Project'"
@@ -131,7 +107,7 @@ const year = new Date().getFullYear();
           class="panel overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
           v-reveal:panel
         >
-          <Services :services="services" />
+          <Services :services="data.services" />
         </section>
 
         <!-- Experience (dark) -->

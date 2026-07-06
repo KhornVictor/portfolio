@@ -63,6 +63,12 @@ export interface Language {
   fluency: string;
 }
 
+export interface Service {
+  title: string;
+  description: string;
+  tags: string[];
+}
+
 export interface Portfolio {
   personal: Personal;
   projects: Project[];
@@ -72,6 +78,7 @@ export interface Portfolio {
   certificates: Certificate[];
   interests: Interests;
   languages: Language[];
+  services: Service[];
 }
 
 const base = import.meta.env.BASE_URL || "/";
@@ -92,6 +99,7 @@ export async function loadPortfolio(): Promise<Portfolio> {
     certificates,
     interests,
     languages,
+    services
   ] = await Promise.all([
     getJSON<Personal>("personal.json"),
     getJSON<Project[]>("projects.json"),
@@ -101,6 +109,7 @@ export async function loadPortfolio(): Promise<Portfolio> {
     getJSON<Certificate[]>("certificates.json"),
     getJSON<Interests>("interests.json"),
     getJSON<Language[]>("languages.json"),
+    getJSON<Service[]>("services.json")
   ]);
 
   return {
@@ -112,5 +121,6 @@ export async function loadPortfolio(): Promise<Portfolio> {
     certificates,
     interests,
     languages,
+    services
   };
 }

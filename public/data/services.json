@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Backend Development",
+    "description":
+      "Server-side applications with NestJS, Express and Node.js — structured around clean, feature-driven architecture with custom pipes and decorators.",
+    "tags": ["NestJS", "Express.js", "Node.js", "TypeScript"]
+  },
+  {
+    "title": "Database Design",
+    "description":
+      "Relational schema design and normalization up to 3NF/BCNF using MySQL, Prisma ORM and DBML to keep data consistent, fast and redundancy-free.",
+    "tags": ["MySQL", "Prisma ORM", "DBML", "Normalization"]
+  },
+  {
+    "title": "API & Integration",
+    "description":
+      "Type-safe REST APIs and third-party integrations, including real-time automation with the Telegram Bot API and secure secret handling.",
+    "tags": ["REST API", "Prisma", "Telegram API"]
+  },
+  {
+    "title": "DevOps & Automation",
+    "description":
+      "CI/CD pipelines with GitHub Actions and YAML workflows, plus automated notifications that keep repositories and teams in sync.",
+    "tags": ["GitHub Actions", "YAML", "CI/CD", "Git"]
+  }
+]
