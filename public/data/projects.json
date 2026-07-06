@@ -1,0 +1,35 @@
+[
+  {
+    "title": "GitHub-Telegram Notification Bot",
+    "description": "Built a CI/CD-linked notification utility that automatically dispatches real-time alerts to a specific Telegram chat whenever GitHub push or pull request events are triggered.",
+    "technologies": ["GitHub Actions", "YAML", "Node.js", "Telegram API"],
+    "highlights": [
+      "Configured automated YAML workflows to listen to repository webhooks.",
+      "Secured environment variables and API tokens using GitHub Secrets."
+    ],
+    "github_url": "https://github.com/KhornVictor/github-telegram-bot",
+    "live_url": ""
+  },
+  {
+    "title": "E-Commerce & Library Management DB Design",
+    "description": "Designed and mapped comprehensive relational database schemas for complex management systems, focusing on data integrity and performance.",
+    "technologies": ["MySQL", "DBML", "Database Normalization"],
+    "highlights": [
+      "Successfully normalized complex architectures up to 3NF and BCNF to eliminate data redundancy.",
+      "Transcribed visual entity-relationship diagrams into clean DBML scripts for documentation."
+    ],
+    "github_url": "",
+    "live_url": ""
+  },
+  {
+    "title": "Modular Full-Stack Backend Integration",
+    "description": "Developed a modular, feature-based backend application utilizing modern architectural patterns and robust ORM mapping.",
+    "technologies": ["NestJS", "TypeScript", "Prisma ORM", "MySQL"],
+    "highlights": [
+      "Structured a highly clean, feature-driven directory path using NestJS modules, pipes, and custom decorators.",
+      "Integrated Prisma ORM with a local MySQL instance ('RDTC') to handle smooth schema migrations and type-safe database queries."
+    ],
+    "github_url": "https://github.com/KhornVictor/nestjs-prisma-backend",
+    "live_url": ""
+  }
+]

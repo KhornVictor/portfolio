@@ -1,0 +1,13 @@
+[
+  {
+    "institution": "Your University / Institute Name",
+    "degree": "Bachelor of Science in Computer Science / Information Technology",
+    "start_date": "2023",
+    "end_date": "Present",
+    "courses": [
+      "Database Systems & Design",
+      "Data Structures and Algorithms",
+      "Software Architecture"
+    ]
+  }
+]

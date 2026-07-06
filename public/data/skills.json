@@ -1,0 +1,26 @@
+{
+  "languages": [
+    "JavaScript",
+    "TypeScript",
+    "HTML5",
+    "CSS3"
+  ],
+  "backend": [
+    "Node.js",
+    "NestJS",
+    "Express.js"
+  ],
+  "database_and_orms": [
+    "MySQL",
+    "Prisma ORM",
+    "Relational Algebra",
+    "Database Normalization (3NF / BCNF)",
+    "DBML (Database Markup Language)"
+  ],
+  "devops_and_tools": [
+    "Git",
+    "GitHub Actions",
+    "YAML",
+    "Telegram Bot API"
+  ]
+}

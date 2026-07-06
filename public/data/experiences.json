@@ -1,0 +1,15 @@
+[
+  {
+    "company": "Freelance / Personal Projects",
+    "position": "Full-Stack Developer",
+    "location": "Phnom Penh, Cambodia",
+    "start_date": "2025-06",
+    "end_date": "Present",
+    "description": "Designing and building custom backend architectures and database solutions for small-scale applications and automated tools.",
+    "highlights": [
+      "Designed and normalized relational database schemas (3NF/BCNF) for e-commerce and library management systems using MySQL and DBML.",
+      "Built server-side applications using NestJS and Prisma ORM, implementing custom pipes and decorators to ensure data validation and clean code architecture.",
+      "Automated repository operational workflows by engineering custom Telegram bots integrated with GitHub Actions."
+    ]
+  }
+]

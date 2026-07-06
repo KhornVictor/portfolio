@@ -1,0 +1,22 @@
+{
+  "name": "Khorn Victor",
+  "label": "Junior Full-Stack Developer",
+  "email": "victorkhornkh@gmail.com",
+  "phone": "+855 XX XXX XXX",
+  "website": "https://portfolio-puce-nine-0oelx3s9cm.vercel.app",
+  "summary": "A detail-oriented Junior Full-Stack Developer with a strong emphasis on backend engineering, robust database design, and clean architecture. Passionate about structuring scalable systems, normalizing data, and automating workflows.",
+  "location": {
+    "city": "Phnom Penh",
+    "country": "Cambodia"
+  },
+  "profiles": [
+    {
+      "network": "GitHub",
+      "url": "https://github.com/KhornVictor"
+    },
+    {
+      "network": "LinkedIn",
+      "url": "https://www.linkedin.com/in/khorn-victor-794a6635a"
+    }
+  ]
+}
