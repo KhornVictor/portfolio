@@ -37,7 +37,7 @@ const initials = computed(() =>
   >
     <!-- Cover -->
     <div
-      class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-black/5"
+      class="relative aspect-4/3 overflow-hidden rounded-2xl border border-black/5"
       :style="{
         background: `radial-gradient(120% 120% at 15% 0%, rgba(${accent},0.28), rgba(0,0,0,0) 55%), linear-gradient(160deg,#1a1a1e 0%,#0e0e10 100%)`,
       }"
@@ -69,7 +69,7 @@ const initials = computed(() =>
 
       <!-- ghost initials -->
       <span
-        class="display absolute -bottom-3 right-3 text-[6rem] leading-none text-white/[0.06]"
+        class="display absolute -bottom-3 right-3 text-[6rem] leading-none text-white/6"
         aria-hidden="true"
         >{{ initials }}</span
       >
@@ -96,7 +96,7 @@ const initials = computed(() =>
       <span
         v-for="tech in project.technologies.slice(0, 3)"
         :key="tech"
-        class="rounded-full border border-black/8 bg-black/[0.03] px-3 py-1 text-xs text-ink/65"
+        class="rounded-full border border-black/8 bg-black/3 px-3 py-1 text-xs text-ink/65"
         >{{ tech }}</span
       >
     </div>
