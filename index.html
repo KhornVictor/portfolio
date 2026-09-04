@@ -4,43 +4,48 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Khorn Victor | Junior Full-Stack Developer</title>
+    <!-- ============ Primary SEO ============ -->
+    <title>Khorn Victor | Junior Full-Stack Developer in Phnom Penh</title>
     <meta
       name="description"
       content="Khorn Victor is a Junior Full-Stack Developer in Phnom Penh, Cambodia, focused on backend engineering with Node.js, NestJS, TypeScript, MySQL and Prisma ORM."
     />
     <meta name="author" content="Khorn Victor" />
-    <meta
-      name="keywords"
-      content="Khorn Victor, portfolio, full-stack developer, backend developer, Node.js, NestJS, TypeScript, Prisma ORM, MySQL, database design, Phnom Penh, Cambodia"
-    />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="googlebot" content="index, follow" />
     <link rel="canonical" href="https://www.khornvictor.com/" />
 
-    <!-- Open Graph -->
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="googlebot" content="index, follow" />
+
+    <!-- ============ Open Graph (Facebook, LinkedIn, Telegram) ============ -->
     <meta property="og:type" content="profile" />
     <meta property="og:site_name" content="Khorn Victor" />
     <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://www.khornvictor.com/" />
     <meta property="og:title" content="Khorn Victor | Junior Full-Stack Developer" />
     <meta
       property="og:description"
       content="Backend-leaning full-stack developer from Phnom Penh, Cambodia. Node.js, NestJS, TypeScript, MySQL and Prisma ORM - clean architecture and scalable systems."
     />
-    <meta property="og:url" content="https://www.khornvictor.com/" />
+    <meta property="og:image" content="https://www.khornvictor.com/images/og-cover.png" />
     <meta
-      property="og:image"
-      content="https://www.khornvictor.com/images/avatar1.png"
+      property="og:image:secure_url"
+      content="https://www.khornvictor.com/images/og-cover.png"
     />
-    <meta property="og:image:alt" content="Portrait of Khorn Victor" />
     <meta property="og:image:type" content="image/png" />
-    <meta property="og:image:width" content="1024" />
-    <meta property="og:image:height" content="1024" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Khorn Victor - Junior Full-Stack Developer, Phnom Penh, Cambodia"
+    />
     <meta property="profile:first_name" content="Victor" />
     <meta property="profile:last_name" content="Khorn" />
     <meta property="profile:username" content="KhornVictor" />
 
-    <!-- Twitter -->
+    <!-- ============ X / Twitter ============ -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@KhornVictor" />
     <meta name="twitter:creator" content="@KhornVictor" />
@@ -49,19 +54,23 @@
       name="twitter:description"
       content="Backend-leaning full-stack developer from Phnom Penh, Cambodia. Node.js, NestJS, TypeScript, MySQL and Prisma ORM."
     />
+    <meta name="twitter:image" content="https://www.khornvictor.com/images/og-cover.png" />
     <meta
-      name="twitter:image"
-      content="https://www.khornvictor.com/images/avatar1.png"
+      name="twitter:image:alt"
+      content="Khorn Victor - Junior Full-Stack Developer, Phnom Penh, Cambodia"
     />
-    <meta name="twitter:image:alt" content="Portrait of Khorn Victor" />
 
-    <!-- Geo -->
+    <!-- ============ Geo ============ -->
     <meta name="geo.region" content="KH-12" />
     <meta name="geo.placename" content="Phnom Penh" />
 
+    <!-- ============ Icons & theme ============ -->
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="theme-color" content="#c9ccce" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <meta name="theme-color" content="#c9ccce" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0d10" media="(prefers-color-scheme: dark)" />
 
+    <!-- ============ Fonts ============ -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -69,57 +78,70 @@
       rel="stylesheet"
     />
 
+    <!-- ============ Structured data ============ -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "Person",
-        "name": "Khorn Victor",
-        "givenName": "Victor",
-        "familyName": "Khorn",
-        "url": "https://www.khornvictor.com/",
-        "image": "https://www.khornvictor.com/images/avatar1.png",
-        "jobTitle": "Junior Full-Stack Developer",
-        "email": "mailto:victorkhornkh@gmail.com",
-        "telephone": "+855 81 323 442",
-        "description": "A detail-oriented Junior Full-Stack Developer with a strong emphasis on backend engineering, robust database design, and clean architecture.",
-        "address": {
-          "@type": "PostalAddress",
-          "addressLocality": "Phnom Penh",
-          "postalCode": "12000",
-          "addressCountry": "KH"
-        },
-        "knowsAbout": [
-          "JavaScript",
-          "TypeScript",
-          "Node.js",
-          "NestJS",
-          "Express.js",
-          "MySQL",
-          "Prisma ORM",
-          "Database Normalization",
-          "Git",
-          "GitHub Actions"
-        ],
-        "knowsLanguage": ["en", "km"],
-        "sameAs": [
-          "https://github.com/KhornVictor",
-          "https://www.linkedin.com/in/khorn-victor-794a6635a",
-          "https://t.me/KhornVictor",
-          "https://www.facebook.com/khorn.victor.7",
-          "https://twitter.com/KhornVictor",
-          "https://www.instagram.com/khornvictor/"
+        "@graph": [
+          {
+            "@type": "Person",
+            "@id": "https://www.khornvictor.com/#person",
+            "name": "Khorn Victor",
+            "givenName": "Victor",
+            "familyName": "Khorn",
+            "url": "https://www.khornvictor.com/",
+            "image": "https://www.khornvictor.com/images/avatar1.png",
+            "jobTitle": "Junior Full-Stack Developer",
+            "email": "mailto:victorkhornkh@gmail.com",
+            "telephone": "+855 81 323 442",
+            "description": "A detail-oriented Junior Full-Stack Developer with a strong emphasis on backend engineering, robust database design, and clean architecture.",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Phnom Penh",
+              "postalCode": "12000",
+              "addressCountry": "KH"
+            },
+            "knowsAbout": [
+              "JavaScript",
+              "TypeScript",
+              "Node.js",
+              "NestJS",
+              "Express.js",
+              "MySQL",
+              "Prisma ORM",
+              "Database Normalization",
+              "Git",
+              "GitHub Actions"
+            ],
+            "knowsLanguage": ["en", "km"],
+            "sameAs": [
+              "https://github.com/KhornVictor",
+              "https://www.linkedin.com/in/khorn-victor-794a6635a",
+              "https://t.me/KhornVictor",
+              "https://www.facebook.com/khorn.victor.7",
+              "https://twitter.com/KhornVictor",
+              "https://www.instagram.com/khornvictor/"
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://www.khornvictor.com/#website",
+            "name": "Khorn Victor | Portfolio",
+            "url": "https://www.khornvictor.com/",
+            "inLanguage": "en",
+            "publisher": { "@id": "https://www.khornvictor.com/#person" }
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://www.khornvictor.com/#webpage",
+            "url": "https://www.khornvictor.com/",
+            "name": "Khorn Victor | Junior Full-Stack Developer",
+            "isPartOf": { "@id": "https://www.khornvictor.com/#website" },
+            "about": { "@id": "https://www.khornvictor.com/#person" },
+            "primaryImageOfPage": "https://www.khornvictor.com/images/og-cover.png",
+            "inLanguage": "en"
+          }
         ]
-      }
-    </script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Khorn Victor | Portfolio",
-        "url": "https://www.khornvictor.com/",
-        "inLanguage": "en",
-        "author": { "@type": "Person", "name": "Khorn Victor" }
       }
     </script>
   </head>
