@@ -1,2 +1,10 @@
+# https://www.khornvictor.com/robots.txt
+
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /private/
+Disallow: /cgi-bin/
+Disallow: /*?*token=
+
+Sitemap: https://www.khornvictor.com/sitemap.xml
