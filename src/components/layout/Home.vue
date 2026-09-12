@@ -52,7 +52,7 @@ const year = new Date().getFullYear();
 
 <template>
   <div class="min-h-screen overflow-x-hidden">
-    <div class="mx-auto w-full px-3 py-3 sm:px-5 sm:py-5">
+    <div class="mx-auto w-full">
       <!-- Loading skeleton -->
       <div
         v-if="!data && !failed"
@@ -62,7 +62,7 @@ const year = new Date().getFullYear();
       >
         <!-- Hero panel skeleton -->
         <section
-          class="panel flex min-h-[calc(100vh-1.5rem)] flex-col overflow-hidden pb-2 sm:min-h-[calc(100vh-2.5rem)]"
+          class="panel flex flex-col overflow-hidden pb-2"
         >
           <!-- Header row -->
           <div
@@ -130,7 +130,7 @@ const year = new Date().getFullYear();
         <!-- Hero -->
         <section
           id="home"
-          class="panel flex min-h-[calc(100vh-1.5rem)] flex-col overflow-hidden pb-2 sm:min-h-[calc(100vh-2.5rem)]"
+          class="panel flex flex-col overflow-hidden pb-2 h-screen"
           v-reveal:panel
         >
           <SiteHeader

@@ -69,21 +69,18 @@ body {
 
 /* ---------- Reusable surfaces ---------- */
 .panel {
-  border-radius: 28px;
   background: #fbfbfc;
   box-shadow: 0 30px 80px -30px rgba(20, 22, 26, 0.45),
     0 2px 6px rgba(20, 22, 26, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .panel-soft {
-  border-radius: 28px;
   background: linear-gradient(180deg, #f6f6f7 0%, #efeff1 100%);
   box-shadow: 0 30px 80px -30px rgba(20, 22, 26, 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 .panel-dark {
-  border-radius: 28px;
   background: linear-gradient(180deg, #17171a 0%, #101012 100%);
   box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.6),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);

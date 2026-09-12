@@ -71,7 +71,7 @@ const socials = computed(() => [
 
 <template>
   <div
-    class="relative flex flex-1 flex-col px-4 pb-0 pt-6 sm:px-8 lg:px-12 lg:pt-10"
+    class="relative flex w-full flex-1 flex-col px-4 py-4 sm:px-7 sm:py-6"
   >
     <!-- Binary grid background -->
     <BinaryGrid class="pointer-events-none absolute inset-0 z-0" />
@@ -85,7 +85,7 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in firstLetters"
           :key="'f' + i"
-          class="letter hover:scale-110 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
+          class="letter hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
           :style="{ animationDelay: i * 45 + 'ms' }"
           >{{ ch === " " ? " " : ch }}</span
         >
@@ -94,7 +94,7 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in restLetters"
           :key="'r' + i"
-          class="letter hover:scale-110 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
+          class="letter hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
           :style="{ animationDelay: (firstLetters.length + i) * 45 + 'ms' }"
           >{{ ch === " " ? " " : ch }}</span
         >
@@ -103,9 +103,9 @@ const socials = computed(() => [
 
     <!-- Portrait -->
     <div
-      class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-200 avatar pointer-events-none pb-10 w-full items-center justify-center"
+      class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-150 avatar pointer-events-none pb-10 w-full items-center justify-center"
     >
-      <div ref="frame" class="relative 2xl:w-[min(100%,520px)] xl:w-[min(100%,500px)] lg:w-[min(100%,470px)] w-[min(100%,420px)]">
+      <div ref="frame" class="relative 2xl:w-130 xl:w-125 lg:w-117.5 w-105">
         <img
           :src="avatar"
           :alt="name"
@@ -125,22 +125,30 @@ const socials = computed(() => [
     <div
       class="relative z-30 mt-2 flex flex-col items-stretch justify-between gap-6 sm:gap-8 md:absolute md:inset-x-8 md:bottom-1 md:mt-0 md:flex-row md:items-end lg:inset-x-12 lg:bottom-12"
     >
+      <!-- Between sm and xl only the button shows; hovering/focusing the card expands the full content. -->
       <div
-        class="max-w-full md:max-w-sm lg:max-w-md md:bg-[#fbfbfc] md:p-10 rounded-2xl md:shadow-[0px_0px_100px_rgba(0,0,0,0.1)]"
-        v-reveal="180"
+        class="group max-w-full md:max-w-sm lg:max-w-md rounded-2xl transition-[background-color,padding,box-shadow] hover:bg-[#fbfbfc] xl:bg-[#fbfbfc] hover:p-5 duration-300 border-0 xl:p-10 hover:shadow-2xl xl:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-hover:bg-[#fbfbfc] sm:max-xl:group-hover:p-10 sm:max-xl:group-hover:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-focus-within:bg-[#fbfbfc] sm:max-xl:group-focus-within:p-10 sm:max-xl:group-focus-within:shadow-[0px_0px_100px_rgba(0,0,0,0.1)]"
       >
-        <h2
-          class="display text-xl tracking-tight sm:text-[1.7rem] lg:text-[2rem]"
+        <div
+          class="grid grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-300 ease-out sm:max-xl:grid-rows-[0fr] sm:max-xl:opacity-0 sm:max-xl:group-hover:grid-rows-[1fr] sm:max-xl:group-hover:opacity-100 sm:max-xl:group-focus-within:grid-rows-[1fr] sm:max-xl:group-focus-within:opacity-100"
         >
-          {{ role }}
-        </h2>
-        <p
-          class="mt-2 text-sm leading-relaxed text-ink/60 sm:text-base"
-          v-reveal="210"
+          <div class="min-h-0 overflow-hidden">
+            <h2
+              class="display text-xl tracking-tight sm:text-[1.7rem] lg:text-[2rem]"
+            >
+              {{ role }}
+            </h2>
+            <p
+              class="mt-2 text-sm leading-relaxed text-ink/60 sm:text-base"
+            >
+              {{ description }}
+            </p>
+          </div>
+        </div>
+        <a
+          class="btn btn-dark mt-5 sm:max-xl:mt-0 sm:max-xl:group-hover:mt-5 sm:max-xl:group-focus-within:mt-5 transition-[margin] duration-500"
+          :href="collaborateHref"
         >
-          {{ description }}
-        </p>
-        <a class="btn btn-dark mt-5" :href="collaborateHref">
           Let's collaborate
           <ArrowIcon :size="16" />
         </a>
@@ -208,11 +216,11 @@ const socials = computed(() => [
 /* Slide + shrink the portrait on name hover to reveal the full name */
 .avatar {
   transition: transform 0.4s ease-in-out;
-  transform: translateY(5%);
+  transform: translateY(10%);
 }
 
 .giant-name:hover ~ .avatar {
-  transform: translateY(5%) scale(0.9);
+  transform: translateY(10%);
 }
 
 @media (prefers-reduced-motion: reduce) {

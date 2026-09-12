@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <header
-    class="flex items-center z-50 justify-between gap-4 px-4 pt-4 sm:px-7 sm:pt-6"
+    class="flex items-center z-50 justify-between gap-4 px-4 py-4 sm:px-7 sm:py-6"
   >
     <!-- Availability badge -->
     <span class="pill">
