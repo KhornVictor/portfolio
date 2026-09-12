@@ -14,14 +14,14 @@ defineProps<{
   >
     <!-- Availability badge -->
     <span class="pill">
-      <span class="relative flex h-2 w-2">
-        <span
-          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
-        ></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+      <div
+        class="p-1 bg-green-700 rounded-full inline-flex items-center justify-center mr-2"
+      >
+        <img src="/favicon.png" class="h-4 w-4" alt="" />
+      </div>
+      <span>
+        {{ available }}
       </span>
-      <span class="hidden sm:inline">{{ available }}</span>
-      <span class="sm:hidden">Available</span>
     </span>
 
     <!-- Center navigation -->
@@ -45,7 +45,11 @@ defineProps<{
     </nav>
 
     <!-- CTA -->
-    <a class="btn btn-dark py-2.5! px-4! text-sm" target="_blank" :href="talkHref">
+    <a
+      class="btn btn-dark py-2.5! px-4! text-sm"
+      target="_blank"
+      :href="talkHref"
+    >
       Let's Talk
       <ArrowIcon :size="15" />
     </a>

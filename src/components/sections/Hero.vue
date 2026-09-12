@@ -21,12 +21,14 @@ const avatars = [
   `${base}images/avatar3.png`,
   `${base}images/avatar4.png`,
   `${base}images/avatar5.png`,
+  `${base}images/avatar7.png`,
+  `${base}images/avatar8.png`,
 ];
 const index = ref(0);
 const glitch = ref(false);
 const frame = ref<HTMLElement | null>(null);
 const avatar = computed(() => avatars[index.value]);
-const timeDuration = computed(() => (avatars.length < 2 ? 0 : 1000 + Math.random() * 5000));
+const timeDuration = computed(() => (avatars.length < 2 ? 0 : 5000 + Math.random() * 1000));
 
 let timer: ReturnType<typeof setInterval> | undefined;
 
@@ -103,11 +105,11 @@ const socials = computed(() => [
     <div
       class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-200 avatar pointer-events-none pb-10 w-full items-center justify-center"
     >
-      <div ref="frame" class="relative w-[min(100%,420px)]">
+      <div ref="frame" class="relative 2xl:w-[min(100%,550px)] xl:w-[min(100%,500px)] lg:w-[min(100%,470px)] w-[min(100%,420px)]">
         <img
           :src="avatar"
           :alt="name"
-          class="avatar-img relative w-full select-none object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.18)]"
+          class="avatar-img relative w-full h-full select-none object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.18)]"
           :class="{ 'is-glitching': glitch }"
           draggable="false"
           v-reveal="120"
@@ -206,6 +208,7 @@ const socials = computed(() => [
 /* Slide + shrink the portrait on name hover to reveal the full name */
 .avatar {
   transition: transform 0.4s ease-in-out;
+  transform: translateY(5%);
 }
 
 .giant-name:hover ~ .avatar {

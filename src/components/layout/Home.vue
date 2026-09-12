@@ -148,15 +148,6 @@ const year = new Date().getFullYear();
           />
         </section>
 
-        <!-- Figma cursor animation -->
-        <!-- <section
-          class="panel-soft grid place-items-center overflow-hidden px-5 py-12 sm:px-10 sm:py-16"
-          v-reveal:panel
-        >
-          <FigmaCursor class="w-full max-w-140" />
-        </section> -->
-
-        <!-- Selected Work -->
         <section
           id="work"
           class="panel-soft overflow-hidden px-5 py-10 sm:px-10 sm:py-14"

@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 
-/**
- * BinaryGrid — animated background of 0/1 glyphs.
- * Bits flip randomly on their own, and the cursor acts like a magnet:
- * nearby glyphs are pulled toward it, brighten, grow, and flip faster.
- */
 const props = withDefaults(
   defineProps<{
-    /** Glyph color as "r, g, b". */
     color?: string;
-    /** Grid cell size in px (spacing between glyphs). */
     cell?: number;
-    /** Radius of the cursor's influence in px. */
     radius?: number;
   }>(),
   { color: "13, 13, 15", cell: 26, radius: 170 }

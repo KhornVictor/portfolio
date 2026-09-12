@@ -76,7 +76,7 @@ const years = computed(() => {
         <span
           class="hidden rounded-full border border-white/10 px-2.5 py-0.5 text-[0.62rem] uppercase tracking-wide text-white/40 sm:inline"
           >{{ row.kind }}</span
-        >
+        > 
         <span class="text-sm text-white/55">{{ row.range }}</span>
       </div>
     </div>
