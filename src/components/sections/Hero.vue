@@ -105,7 +105,7 @@ const socials = computed(() => [
     <div
       class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-200 avatar pointer-events-none pb-10 w-full items-center justify-center"
     >
-      <div ref="frame" class="relative 2xl:w-[min(100%,550px)] xl:w-[min(100%,500px)] lg:w-[min(100%,470px)] w-[min(100%,420px)]">
+      <div ref="frame" class="relative 2xl:w-[min(100%,520px)] xl:w-[min(100%,500px)] lg:w-[min(100%,470px)] w-[min(100%,420px)]">
         <img
           :src="avatar"
           :alt="name"
