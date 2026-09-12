@@ -43,7 +43,6 @@ async function nextAvatar() {
 }
 
 onMounted(() => {
-  // Only cycle when there's more than one image
   if (avatars.length < 2) return;
   timer = setInterval(nextAvatar, timeDuration.value);
 });
@@ -164,7 +163,7 @@ const socials = computed(() => [
           :key="s.label"
           class="pill social-icon duration-300 transition hover:-translate-y-0.5 hover:shadow-md"
           :href="s.url"
-          :target="s.url.startsWith('mailto:') ? undefined : '_blank'"
+          :target="/^(mailto:|\/)/.test(s.url) ? undefined : '_blank'"
           rel="noreferrer"
         >
           <SocialIcon :name="s.label" :size="16" />

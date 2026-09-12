@@ -38,7 +38,11 @@
     },
     {
       "network": "Terminal",
-      "url": "https://www.terminaltemple.com/"
+      "url": "/terminal"
+    },
+    {
+      "network": "MacOS",
+      "url": "/macos"
     }
   ]
 }
