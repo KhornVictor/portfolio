@@ -66,7 +66,6 @@ const years = computed(() => {
       v-for="(row, i) in rows"
       :key="row.title + i"
       class="group flex items-center justify-between gap-4 border-t border-white/10 px-3 py-6 transition-colors duration-300 last:border-b hover:bg-white/4"
-      v-reveal="i * 70"
     >
       <div class="transition-transform duration-300 group-hover:translate-x-1.5">
         <p class="text-lg font-semibold text-white">{{ row.title }}</p>

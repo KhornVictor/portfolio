@@ -28,7 +28,6 @@ const visible = computed(() =>
   <!-- Filter row -->
   <div
     class="relative z-10 mt-6 flex flex-wrap items-center justify-between gap-4"
-    v-reveal
   >
     <div class="flex flex-wrap items-center gap-1">
       <button

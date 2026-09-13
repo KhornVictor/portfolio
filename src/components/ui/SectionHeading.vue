@@ -22,11 +22,10 @@ defineProps<{
       <h2
         class="display text-[clamp(1.7rem,4.2vw,2.6rem)]"
         :class="dark ? 'text-white' : 'text-ink'"
-        v-reveal
       >
         <span :class="dark ? 'text-white/40' : 'text-ink/35'">/</span>{{ title }}
       </h2>
-      <div v-reveal="80"><slot name="aside" /></div>
+      <div><slot name="aside" /></div>
     </div>
   </div>
 </template>

@@ -131,7 +131,6 @@ const year = new Date().getFullYear();
         <section
           id="home"
           class="panel flex flex-col overflow-hidden pb-2 h-screen"
-          v-reveal:panel
         >
           <SiteHeader
             :navigation="navigation"
@@ -151,7 +150,6 @@ const year = new Date().getFullYear();
         <section
           id="work"
           class="panel-soft overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
-          v-reveal:panel
         >
           <SelectedWork :projects="data.projects" />
         </section>
@@ -160,7 +158,6 @@ const year = new Date().getFullYear();
         <section
           id="service"
           class="panel overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
-          v-reveal:panel
         >
           <Services :services="data.services" />
         </section>
@@ -169,7 +166,6 @@ const year = new Date().getFullYear();
         <section
           id="experience"
           class="panel-dark overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
-          v-reveal:panel
         >
           <Experience
             :experiences="data.experiences"
@@ -181,7 +177,6 @@ const year = new Date().getFullYear();
         <section
           id="contact"
           class="panel-soft overflow-hidden px-5 sm:px-10"
-          v-reveal:panel
         >
           <ContactCTA
             :available="'Available for New Project'"

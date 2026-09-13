@@ -21,7 +21,6 @@ function toggle(i: number) {
       v-for="(service, i) in services"
       :key="service.title"
       class="border-t border-black/10 last:border-b"
-      v-reveal="i * 60"
     >
       <div
         class="my-2 overflow-hidden rounded-2xl transition-colors duration-300"

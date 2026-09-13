@@ -33,7 +33,6 @@ const initials = computed(() =>
     :target="link ? '_blank' : undefined"
     rel="noreferrer"
     class="group block"
-    v-reveal="(index % 2) * 90"
   >
     <!-- Cover -->
     <div

@@ -111,7 +111,6 @@ const socials = computed(() => [
           class="avatar-img relative w-full h-full select-none object-contain drop-shadow-[0_30px_50px_rgba(0,0,0,0.18)]"
           :class="{ 'is-glitching': glitch }"
           draggable="false"
-          v-reveal="120"
         />
         <!-- soft fade so the photo melts into the panel -->
         <div
@@ -156,7 +155,6 @@ const socials = computed(() => [
       <div
         class="md:flex flex-wrap gap-2.5 md:flex-col md:items-end hidden"
         aria-label="Social links"
-        v-reveal="240"
       >
         <a
           v-for="s in socials"
