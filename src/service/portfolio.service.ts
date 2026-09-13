@@ -1,4 +1,4 @@
-// Loads the portfolio content from the static JSON files in /public/data.
+// Loads the portfolio content from the Express API (see ../../personal).
 // Everything is typed so the components get autocomplete + safety.
 
 export interface Personal {
@@ -81,46 +81,21 @@ export interface Portfolio {
   services: Service[];
 }
 
-const base = import.meta.env.BASE_URL || "/";
+// In dev the Vite proxy forwards /api -> http://localhost:5000 (vite.config.ts).
+// In production set VITE_API_URL to the deployed backend, e.g. https://api.example.com
+const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
 
-async function getJSON<T>(file: string): Promise<T> {
-  const res = await fetch(`${base}data/${file}`);
-  if (!res.ok) throw new Error(`Failed to load ${file} (${res.status})`);
+async function getJSON<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`);
+  if (!res.ok) throw new Error(`Failed to load ${path} (${res.status})`);
   return res.json() as Promise<T>;
 }
 
-export async function loadPortfolio(): Promise<Portfolio> {
-  const [
-    personal,
-    projects,
-    skills,
-    experiences,
-    educations,
-    certificates,
-    interests,
-    languages,
-    services
-  ] = await Promise.all([
-    getJSON<Personal>("personal.json"),
-    getJSON<Project[]>("projects.json"),
-    getJSON<Skills>("skills.json"),
-    getJSON<Experience[]>("experiences.json"),
-    getJSON<Education[]>("educations.json"),
-    getJSON<Certificate[]>("certificates.json"),
-    getJSON<Interests>("interests.json"),
-    getJSON<Language[]>("languages.json"),
-    getJSON<Service[]>("services.json")
-  ]);
+export function loadPortfolio(): Promise<Portfolio> {
+  return getJSON<Portfolio>("/api/portfolio");
+}
 
-  return {
-    personal,
-    projects,
-    skills,
-    experiences,
-    educations,
-    certificates,
-    interests,
-    languages,
-    services
-  };
+// Fetch a single section, e.g. getSection("projects")
+export function getSection<K extends keyof Portfolio>(section: K): Promise<Portfolio[K]> {
+  return getJSON<Portfolio[K]>(`/api/portfolio/${section}`);
 }
