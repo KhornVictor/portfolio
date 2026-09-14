@@ -24,9 +24,9 @@ const timeDuration = computed(() => (avatars.length < 2 ? 0 : 5000 + Math.random
 
 let timer: ReturnType<typeof setInterval> | undefined;
 
-async function nextAvatar() {
+async function goTo(step: 1 | -1) {
   if (avatars.length < 2) return;
-  index.value = (index.value + 1) % avatars.length;
+  index.value = (index.value + step + avatars.length) % avatars.length;
   // Restart the glitch animation on every swap
   glitch.value = false;
   await nextTick();
@@ -34,9 +34,22 @@ async function nextAvatar() {
   glitch.value = true;
 }
 
+const nextAvatar = () => goTo(1);
+
+function startTimer() {
+  if (timer) clearInterval(timer);
+  timer = setInterval(nextAvatar, timeDuration.value);
+}
+
+// Manual navigation: swap immediately and reset the auto-cycle countdown.
+function onArrow(step: 1 | -1) {
+  void goTo(step);
+  startTimer();
+}
+
 onMounted(() => {
   if (avatars.length < 2) return;
-  timer = setInterval(nextAvatar, timeDuration.value);
+  startTimer();
 });
 
 onBeforeUnmount(() => {
@@ -76,7 +89,7 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in firstLetters"
           :key="'f' + i"
-          class="letter hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
+          class="letter cursor-pointer hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
           :style="{ animationDelay: i * 45 + 'ms' }"
           >{{ ch === " " ? " " : ch }}</span
         >
@@ -85,7 +98,7 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in restLetters"
           :key="'r' + i"
-          class="letter hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
+          class="letter cursor-pointer hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
           :style="{ animationDelay: (firstLetters.length + i) * 45 + 'ms' }"
           >{{ ch === " " ? " " : ch }}</span
         >
@@ -110,6 +123,31 @@ const socials = computed(() => [
         ></div>
       </div>
     </div>
+
+    <!-- Prev / next avatar arrows. Each sits in an invisible hover zone on the
+         left/right edge; the arrow only fades in while the cursor is inside that zone. -->
+    <template v-if="avatars.length > 1">
+      <div class="avatar-arrow-zone left-0 justify-start pl-3 sm:pl-6 lg:pl-10">
+        <button
+          type="button"
+          class="avatar-arrow"
+          aria-label="Previous profile"
+          @click="onArrow(-1)"
+        >
+          <span aria-hidden="true">&lt;</span>
+        </button>
+      </div>
+      <div class="avatar-arrow-zone right-0 justify-end pr-3 sm:pr-6 lg:pr-10">
+        <button
+          type="button"
+          class="avatar-arrow"
+          aria-label="Next profile"
+          @click="onArrow(1)"
+        >
+          <span aria-hidden="true">&gt;</span>
+        </button>
+      </div>
+    </template>
 
     <!-- Overlay: role/description (left) + socials (right) -->
     <div
@@ -227,6 +265,87 @@ const socials = computed(() => [
     transform: scale(1);
     opacity: 1;
   }
+}
+
+/* Prev / next avatar arrows */
+/* Invisible hover zone: a vertical strip on each edge, centered on the page. */
+.avatar-arrow-zone {
+  position: absolute;
+  top: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  width: clamp(5rem, 12vw, 9rem);
+  height: 40%;
+  transform: translateY(-50%);
+}
+
+.avatar-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  opacity: 0;
+  pointer-events: none;
+  /* Hidden state: pushed off toward its own edge; --slide-from is set per side below. */
+  --slide-from: -1.5rem;
+  transform: translateX(var(--slide-from));
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 15, 17, 0.08);
+  box-shadow: 0 6px 16px -8px rgba(20, 22, 26, 0.35);
+  color: var(--color-ink);
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+}
+
+.avatar-arrow-zone.right-0 .avatar-arrow {
+  --slide-from: 1.5rem;
+}
+
+/* Reveal only while the cursor is inside the zone (or the button is keyboard-focused):
+   slide in from the edge while fading in. */
+.avatar-arrow-zone:hover .avatar-arrow,
+.avatar-arrow:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+/* No hover on touch devices: keep the arrows always visible there. */
+@media (hover: none) {
+  .avatar-arrow {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .avatar-arrow {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+}
+
+.avatar-arrow:hover {
+  transform: scale(1.08);
+  box-shadow: 0 12px 24px -10px rgba(20, 22, 26, 0.45);
+}
+
+.avatar-arrow:active {
+  transform: scale(0.96);
+}
+
+.avatar-arrow:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
 }
 
 /* TikTok-style glitch transition between avatars */

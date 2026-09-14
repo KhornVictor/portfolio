@@ -6,6 +6,10 @@ defineProps<{
   available: string;
   talkHref: string;
 }>();
+
+const openVision = () => {
+  window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
+};
 </script>
 
 <template>
@@ -45,13 +49,22 @@ defineProps<{
     </nav>
 
     <!-- CTA -->
-    <a
-      class="btn btn-dark py-2.5! px-4! text-sm"
-      target="_blank"
-      :href="talkHref"
-    >
-      Let's Talk
-      <ArrowIcon :size="15" />
-    </a>
+    <div class="flex items-center gap-4">
+      <a
+        class="btn btn-dark py-2.5! px-4! text-sm"
+        target="_blank"
+        @click="openVision"
+      >
+        <i class="fa-solid fa-eye"></i>
+      </a>
+      <a
+        class="btn btn-dark py-2.5! px-4! text-sm"
+        target="_blank"
+        :href="talkHref"
+      >
+        Let's Talk
+        <ArrowIcon :size="15" />
+      </a>
+    </div>
   </header>
 </template>

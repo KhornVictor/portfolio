@@ -4,6 +4,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { admin, checkSession, login, logout, type WithId } from "../../service/admin.service";
 import { SECTIONS, getPath, type Doc, type SectionDef } from "./sections";
 import RecordForm from "./RecordForm.vue";
+import AccessLinks from "./AccessLinks.vue";
 
 type Item = WithId<Doc>;
 
@@ -37,6 +38,11 @@ function onLogout() {
 }
 
 // ---- section state ----
+// Tools live next to the data sections in the sidebar but don't hit the CRUD API.
+const TOOLS = [{ name: "access-links", label: "Access links" }] as const;
+type ToolName = (typeof TOOLS)[number]["name"];
+const activeTool = ref<ToolName | null>(null);
+
 const active = ref<SectionDef>(SECTIONS[0]!);
 const loading = ref(false);
 const saving = ref(false);
@@ -124,7 +130,9 @@ const removeItem = (item: Item) =>
 
 const pendingDelete = ref<Item | null>(null);
 
-const heading = computed(() => active.value.label);
+const heading = computed(
+  () => (activeTool.value && TOOLS.find((t) => t.name === activeTool.value)?.label) || active.value.label,
+);
 </script>
 
 <template>
@@ -168,10 +176,23 @@ const heading = computed(() => active.value.label);
             :key="s.name"
             type="button"
             class="rounded-full px-3 py-2 text-left text-sm font-medium transition lg:rounded-xl"
-            :class="active.name === s.name ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/5 hover:text-ink'"
-            @click="active = s"
+            :class="!activeTool && active.name === s.name ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/5 hover:text-ink'"
+            @click="active = s; activeTool = null"
           >
             {{ s.label }}
+          </button>
+        </nav>
+        <p class="mt-4 mb-1 px-2 text-[0.65rem] font-medium uppercase tracking-wide text-ink/40">Tools</p>
+        <nav class="flex flex-row flex-wrap gap-1 lg:flex-col">
+          <button
+            v-for="t in TOOLS"
+            :key="t.name"
+            type="button"
+            class="rounded-full px-3 py-2 text-left text-sm font-medium transition lg:rounded-xl"
+            :class="activeTool === t.name ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/5 hover:text-ink'"
+            @click="activeTool = t.name"
+          >
+            {{ t.label }}
           </button>
         </nav>
         <div class="mt-4 flex flex-col gap-1 border-t border-black/5 px-2 pt-3 text-xs text-ink/45">
@@ -186,7 +207,7 @@ const heading = computed(() => active.value.label);
           <div class="flex items-center gap-3">
             <span v-if="notice" class="text-sm text-emerald-600">{{ notice }}</span>
             <button
-              v-if="!active.single && !adding"
+              v-if="!activeTool && !active.single && !adding"
               type="button"
               class="btn btn-dark py-2! text-sm"
               @click="adding = true; editing = null"
@@ -196,8 +217,12 @@ const heading = computed(() => active.value.label);
           </div>
         </div>
 
-        <p v-if="error" class="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ error }}</p>
-        <p v-if="loading" class="text-sm text-ink/50">Loading…</p>
+        <p v-if="error && !activeTool" class="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ error }}</p>
+
+        <!-- Tools -->
+        <AccessLinks v-if="activeTool === 'access-links'" />
+
+        <p v-else-if="loading" class="text-sm text-ink/50">Loading…</p>
 
         <!-- Single-document sections -->
         <RecordForm

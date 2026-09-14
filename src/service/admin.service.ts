@@ -61,6 +61,20 @@ export async function checkSession(): Promise<boolean> {
     .catch(() => false);
 }
 
+export interface AccessLink {
+  token: string;
+  expiresAt: number;
+  days: number;
+}
+
+/** Mint a share token for /main. `days` is clamped server-side (1–90, default 7). */
+export function createAccessLink(days = 7) {
+  return request<AccessLink>("/api/auth/access-link", {
+    method: "POST",
+    body: JSON.stringify({ days }),
+  });
+}
+
 export const admin = {
   list: <T>(section: SectionName) => request<T>(`/api/admin/${section}`),
   replaceSingle: <T>(section: SectionName, data: T) =>
