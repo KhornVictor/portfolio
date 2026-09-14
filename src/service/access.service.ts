@@ -69,3 +69,28 @@ export function buildAccessUrl(token: string, path = "/main"): string {
   url.searchParams.set(TOKEN_PARAM, token);
   return url.toString();
 }
+
+// ---- "NITH" easter egg ----
+// Clicking N-I-T-H on the hero name asks the API to email a 6-digit PIN to the
+// site owner; the right PIN returns a 1-hour access token for /main.
+
+export interface EasterEggChallenge {
+  challengeId: string;
+  expiresAt: number;
+}
+
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${API_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+  return data as T;
+}
+
+export const requestEasterEggPin = () => post<EasterEggChallenge>("/api/auth/easter-egg/request", {});
+
+export const verifyEasterEggPin = (challengeId: string, pin: string) =>
+  post<{ token: string; expiresAt: number }>("/api/auth/easter-egg/verify", { challengeId, pin });

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
 import SocialIcon from "../ui/SocialIcon.vue";
 import BinaryGrid from "../ui/BinaryGrid.vue";
+import EasterEggCard from "../ui/EasterEggCard.vue";
 import { imageUrl } from "../../config/assets";
 
 const props = defineProps<{
@@ -15,12 +16,16 @@ const props = defineProps<{
 }>();
 
 // Avatars cycled with a TikTok-style glitch transition.
-const avatars = [1, 2, 3, 4, 5, 7, 8].map((n) => imageUrl(`Profile/avatar${n}.png`));
+const avatars = [1, 2, 3, 4, 5, 7, 8].map((n) =>
+  imageUrl(`Profile/avatar${n}.png`),
+);
 const index = ref(0);
 const glitch = ref(false);
 const frame = ref<HTMLElement | null>(null);
 const avatar = computed(() => avatars[index.value]);
-const timeDuration = computed(() => (avatars.length < 2 ? 0 : 5000 + Math.random() * 1000));
+const timeDuration = computed(() =>
+  avatars.length < 2 ? 0 : 5000 + Math.random() * 1000,
+);
 
 let timer: ReturnType<typeof setInterval> | undefined;
 
@@ -56,6 +61,30 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
+const SECRET = "NITH";
+const IDLE_RESET_MS = 30_000;
+const typed = ref<string[]>([]);
+const eggOpen = ref(false);
+let idleTimer: ReturnType<typeof setTimeout> | undefined;
+
+function onLetterClick(ch: string) {
+  if (eggOpen.value || ch.trim() === "") return;
+  typed.value = [...typed.value, ch.toUpperCase()].slice(-SECRET.length);
+
+  if (idleTimer) clearTimeout(idleTimer);
+  idleTimer = setTimeout(() => (typed.value = []), IDLE_RESET_MS);
+
+  if (typed.value.join("") === SECRET) {
+    typed.value = [];
+    clearTimeout(idleTimer);
+    eggOpen.value = true;
+  }
+}
+
+onBeforeUnmount(() => {
+  if (idleTimer) clearTimeout(idleTimer);
+});
+
 const nameParts = computed(() => {
   const bits = props.name.trim().split(/\s+/);
   return { first: bits[0] ?? "", rest: bits.slice(1).join(" ") };
@@ -74,9 +103,7 @@ const socials = computed(() => [
 </script>
 
 <template>
-  <div
-    class="relative flex w-full flex-1 flex-col px-4 py-4 sm:px-7 sm:py-6"
-  >
+  <div class="relative flex w-full flex-1 flex-col px-4 py-4 sm:px-7 sm:py-6">
     <!-- Binary grid background -->
     <BinaryGrid class="pointer-events-none absolute inset-0 z-0" />
 
@@ -89,8 +116,9 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in firstLetters"
           :key="'f' + i"
-          class="letter cursor-pointer hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
+          class="letter cursor-pointer active:scale-100 hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/10"
           :style="{ animationDelay: i * 45 + 'ms' }"
+          @click="onLetterClick(ch)"
           >{{ ch === " " ? " " : ch }}</span
         >
       </span>
@@ -98,8 +126,9 @@ const socials = computed(() => [
         <span
           v-for="(ch, i) in restLetters"
           :key="'r' + i"
-          class="letter cursor-pointer hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
+          class="letter cursor-pointer active:scale-110 hover:scale-120 transition-transform duration-300 ease-in-out hover:infinite hover:text-ink/80"
           :style="{ animationDelay: (firstLetters.length + i) * 45 + 'ms' }"
+          @click="onLetterClick(ch)"
           >{{ ch === " " ? " " : ch }}</span
         >
       </span>
@@ -124,27 +153,29 @@ const socials = computed(() => [
       </div>
     </div>
 
+    <EasterEggCard v-if="eggOpen" @close="eggOpen = false" />
+
     <!-- Prev / next avatar arrows. Each sits in an invisible hover zone on the
          left/right edge; the arrow only fades in while the cursor is inside that zone. -->
     <template v-if="avatars.length > 1">
       <div class="avatar-arrow-zone left-0 justify-start pl-3 sm:pl-6 lg:pl-10">
         <button
           type="button"
-          class="avatar-arrow"
+          class="avatar-arrow hover:scale-125 duration-300 active:scale-110"
           aria-label="Previous profile"
           @click="onArrow(-1)"
         >
-          <span aria-hidden="true">&lt;</span>
+          <i class="fa-solid fa-caret-left"></i>
         </button>
       </div>
       <div class="avatar-arrow-zone right-0 justify-end pr-3 sm:pr-6 lg:pr-10">
         <button
           type="button"
-          class="avatar-arrow"
+          class="avatar-arrow hover:scale-125 duration-300 active:scale-110" 
           aria-label="Next profile"
           @click="onArrow(1)"
         >
-          <span aria-hidden="true">&gt;</span>
+          <i class="fa-solid fa-caret-right"></i>
         </button>
       </div>
     </template>
@@ -166,9 +197,7 @@ const socials = computed(() => [
             >
               {{ role }}
             </h2>
-            <p
-              class="mt-2 text-sm leading-relaxed text-ink/60 sm:text-base"
-            >
+            <p class="mt-2 text-sm leading-relaxed text-ink/60 sm:text-base">
               {{ description }}
             </p>
           </div>
@@ -301,8 +330,11 @@ const socials = computed(() => [
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
-  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.25s ease, background 0.25s ease, opacity 0.25s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    background 0.25s ease,
+    opacity 0.25s ease;
 }
 
 .avatar-arrow-zone.right-0 .avatar-arrow {
