@@ -9,7 +9,11 @@ export interface Personal {
   website: string;
   summary: string;
   location: { postalCode?: string; city: string; country: string; continent: string };
-  profiles: { network: string; url: string }[];
+}
+
+export interface Social {
+  network: string;
+  url: string;
 }
 
 export interface Project {
@@ -71,6 +75,7 @@ export interface Service {
 
 export interface Portfolio {
   personal: Personal;
+  social: Social[];
   projects: Project[];
   skills: Skills;
   experiences: Experience[];

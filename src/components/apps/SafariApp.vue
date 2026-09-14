@@ -41,7 +41,7 @@ const links = computed(() => [
   { label: "GitHub", href: owner.github },
   { label: "LinkedIn", href: owner.linkedin },
   { label: "Website", href: owner.website },
-  ...(portfolio.value?.personal.profiles
+  ...(portfolio.value?.social
     .filter((p) => !p.url.startsWith("/") && !/github|linkedin/i.test(p.network))
     .map((p) => ({ label: p.network, href: p.url })) ?? []),
 ]);

@@ -233,7 +233,7 @@ const commands: Record<string, CommandDef> = {
     run: ({ portfolio }) => {
       if (!portfolio) return notLoaded;
       return {
-        lines: portfolio.personal.profiles
+        lines: portfolio.social
           .filter((pr) => !pr.url.startsWith("/"))
           .map((pr) => row(pr.network, pr.url, pr.url)),
       };

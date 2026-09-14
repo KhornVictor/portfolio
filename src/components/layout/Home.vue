@@ -135,14 +135,14 @@ const year = new Date().getFullYear();
           <SiteHeader
             :navigation="navigation"
             :available="'Available for New Project'"
-            :talk-href="data.personal.profiles.find((p) => p.network === 'Telegram')?.url || '#'"
+            :talk-href="data.social.find((p) => p.network === 'Telegram')?.url || '#'"
           />
           <Hero
             :name="data.personal.name"
             :role="data.personal.label"
             :description="data.personal.summary"
             :email="data.personal.email"
-            :profiles="data.personal.profiles"
+            :socials="data.social"
             collaborate-href="#contact"
           />
         </section>

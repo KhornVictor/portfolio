@@ -9,7 +9,7 @@ const props = defineProps<{
   role: string;
   description: string;
   email: string;
-  profiles: { network: string; url: string }[];
+  socials: { network: string; url: string }[];
   collaborateHref: string;
 }>();
 
@@ -63,7 +63,7 @@ const restLetters = computed(() =>
 );
 
 const socials = computed(() => [
-  ...props.profiles.map((p) => ({ label: p.network, url: p.url })),
+  ...props.socials.map((p) => ({ label: p.network, url: p.url })),
   { label: "Email", url: `mailto:${props.email}` },
 ]);
 </script>
