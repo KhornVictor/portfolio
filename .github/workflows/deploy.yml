@@ -35,7 +35,7 @@ jobs:
         with:
           server: ${{ secrets.PORTFOLIO_SERVER }}
           port: 21098
-          username: ${{ secrets.CPANEL_USERNAME }}
+          username: ${{ secrets. }}
           password: ${{ secrets.CPANEL_PASSWORD }}
           local_path: ./dist/*
           remote_path: /home/khorjzbf/public_html/portfolio
