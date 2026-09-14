@@ -35,8 +35,8 @@ jobs:
         with:
           server: ${{ secrets.PORTFOLIO_SERVER }}
           port: 21098
-          username: ${{ secrets. }}
-          password: ${{ secrets.CPANEL_PASSWORD }}
+          username: ${{ secrets.PORTFOLIO_USERNAME }}
+          password: ${{ secrets.PORTFOLIO_PASSWORD }}
           local_path: ./dist/*
-          remote_path: /home/khorjzbf/public_html/portfolio
+          remote_path: /home/khorjzbf/public_html
           sftp_only: true
