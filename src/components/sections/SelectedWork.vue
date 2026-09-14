@@ -5,7 +5,7 @@ import SectionHeading from "../ui/SectionHeading.vue";
 import ProjectCard from "../ui/ProjectCard.vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
 
-const props = defineProps<{ projects: Project[] }>();
+const props = defineProps<{ projects: Project[]; hideSource?: boolean }>();
 
 // A project that ships (has a link) is a "Real Project"; the rest are studies.
 function categoryOf(p: Project) {
@@ -60,6 +60,7 @@ const visible = computed(() =>
       :project="item.project"
       :index="item.index"
       :category="item.category"
+      :hide-source="hideSource"
     />
   </div>
 </template>

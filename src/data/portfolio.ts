@@ -1,7 +1,3 @@
-// Centralised content for the macOS desktop (/macos).
-// Everything shown inside the apps that isn't served by the portfolio API
-// lives here so it can be swapped without touching components.
-
 export const owner = {
   name: "Khorn Victor",
   role: "Full-Stack Developer",

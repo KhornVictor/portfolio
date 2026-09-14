@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import type { WindowState } from "../../desktop/types";
+import { imageUrl } from "../../config/assets";
 
 defineProps<{ win: WindowState }>();
 
-const base = import.meta.env.BASE_URL;
 const photos = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
-  src: `${base}images/avatar${n}.png`,
+  src: imageUrl(`Profile/avatar${n}.png`),
   title: `Portrait ${n}`,
 }));
 const open = ref<number | null>(null);

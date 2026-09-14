@@ -9,6 +9,11 @@ import Experience from "../sections/Experience.vue";
 import ContactCTA from "../sections/ContactCTA.vue";
 // import FigmaCursor from "../ui/FigmaCursor.vue";
 
+// "main" shows everything; "client" is the trimmed public view (no phone,
+// no experience/education, no social links, no source-code links).
+const props = withDefaults(defineProps<{ view?: "main" | "client" }>(), { view: "main" });
+const isClient = computed(() => props.view === "client");
+
 const data = ref<Portfolio | null>(null);
 const failed = ref(false);
 
@@ -30,16 +35,27 @@ const navigation = computed(() => {
       href: "#service",
       count: String(data.value.services.length),
     },
-    {
-      label: "Experience",
-      href: "#experience",
-      count: String(
-        data.value.experiences.length + data.value.educations.length,
-      ),
-    },
+    ...(isClient.value
+      ? []
+      : [
+          {
+            label: "Experience",
+            href: "#experience",
+            count: String(
+              data.value.experiences.length + data.value.educations.length,
+            ),
+          },
+        ]),
     { label: "Contact", href: "#contact" },
   ];
 });
+
+const socials = computed(() => (isClient.value ? [] : data.value?.social ?? []));
+const talkHref = computed(
+  () =>
+    socials.value.find((p) => p.network === "Telegram")?.url ||
+    (data.value ? `mailto:${data.value.personal.email}` : "#"),
+);
 
 const location = computed(() =>
   data.value
@@ -135,14 +151,14 @@ const year = new Date().getFullYear();
           <SiteHeader
             :navigation="navigation"
             :available="'Available for New Project'"
-            :talk-href="data.social.find((p) => p.network === 'Telegram')?.url || '#'"
+            :talk-href="talkHref"
           />
           <Hero
             :name="data.personal.name"
             :role="data.personal.label"
             :description="data.personal.summary"
             :email="data.personal.email"
-            :socials="data.social"
+            :socials="socials"
             collaborate-href="#contact"
           />
         </section>
@@ -151,7 +167,7 @@ const year = new Date().getFullYear();
           id="work"
           class="panel-soft overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
         >
-          <SelectedWork :projects="data.projects" />
+          <SelectedWork :projects="data.projects" :hide-source="isClient" />
         </section>
 
         <!-- Services -->
@@ -164,6 +180,7 @@ const year = new Date().getFullYear();
 
         <!-- Experience (dark) -->
         <section
+          v-if="!isClient"
           id="experience"
           class="panel-dark overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
         >
@@ -182,7 +199,7 @@ const year = new Date().getFullYear();
             :available="'Available for New Project'"
             :email="data.personal.email"
             :location="location"
-            :phone="data.personal.phone"
+            :phone="isClient ? undefined : data.personal.phone"
           />
         </section>
 

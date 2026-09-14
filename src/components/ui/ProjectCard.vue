@@ -7,13 +7,17 @@ const props = defineProps<{
   project: Project;
   index: number;
   category: string;
+  hideSource?: boolean;
 }>();
 
 // Deterministic accent per card, echoing the colourful thumbnails in the demo.
 const accents = ["16,185,129", "99,102,241", "244,114,182", "245,158,11"];
 const accent = computed(() => accents[props.index % accents.length]);
 
-const link = computed(() => props.project.live_url || props.project.github_url || "");
+// Client view only exposes the live demo, never the source repo.
+const link = computed(() =>
+  props.project.live_url || (props.hideSource ? "" : props.project.github_url) || "",
+);
 const initials = computed(() =>
   props.project.title
     .replace(/[^a-zA-Z0-9 ]/g, " ")

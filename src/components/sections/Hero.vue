@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
 import SocialIcon from "../ui/SocialIcon.vue";
 import BinaryGrid from "../ui/BinaryGrid.vue";
+import { imageUrl } from "../../config/assets";
 
 const props = defineProps<{
   name: string;
@@ -14,16 +15,7 @@ const props = defineProps<{
 }>();
 
 // Avatars cycled with a TikTok-style glitch transition.
-const base = import.meta.env.BASE_URL;
-const avatars = [
-  `${base}images/avatar1.png`,
-  `${base}images/avatar2.png`,
-  `${base}images/avatar3.png`,
-  `${base}images/avatar4.png`,
-  `${base}images/avatar5.png`,
-  `${base}images/avatar7.png`,
-  `${base}images/avatar8.png`,
-];
+const avatars = [1, 2, 3, 4, 5, 7, 8].map((n) => imageUrl(`Profile/avatar${n}.png`));
 const index = ref(0);
 const glitch = ref(false);
 const frame = ref<HTMLElement | null>(null);

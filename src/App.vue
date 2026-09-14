@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import Home from "./components/layout/Home.vue";
+import MainPage from "./pages/main/main.page.vue";
+import ClientPage from "./pages/client/client.page.vue";
+import AdminPage from "./pages/admin/admin.page.vue";
 import TerminalPage from "./components/layout/TerminalPage.vue";
 import MacOSPage from "./components/layout/MacOSPage.vue";
 
@@ -16,5 +18,7 @@ const route = computed(() => path.value.replace(/\/+$/, "") || "/");
 <template>
   <TerminalPage v-if="route === '/terminal'" />
   <MacOSPage v-else-if="route === '/macos'" />
-  <Home v-else />
+  <AdminPage v-else-if="route === '/admin'" />
+  <MainPage v-else-if="route === '/main'" />
+  <ClientPage v-else />
 </template>

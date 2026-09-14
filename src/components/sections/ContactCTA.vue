@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ArrowIcon from "../ui/ArrowIcon.vue";
 
-defineProps<{ available: string; phone: string; email: string; location: string }>();
+defineProps<{ available: string; phone?: string; email: string; location: string }>();
 </script>
 
 <template>
@@ -28,7 +28,7 @@ defineProps<{ available: string; phone: string; email: string; location: string 
     </p>
 
     <div class="mt-6 flex flex-wrap justify-center gap-3">
-      <a class="btn btn-light mt-8" :href="`tel:${phone}`">
+      <a v-if="phone" class="btn btn-light mt-8" :href="`tel:${phone}`">
         {{ phone }}
         <ArrowIcon :size="16" />
       </a>
