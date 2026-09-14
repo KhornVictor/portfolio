@@ -1,0 +1,38 @@
+name: Deploy Vue app via FTP
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
+          VITE_IMAGE_BASE: ${{ secrets.VITE_IMAGE_BASE }}
+
+      - name: Deploy to server via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.PORTFOLIO_SERVER }}
+          username: ${{ secrets.PORTFOLIO_USERNAME }}
+          password: ${{ secrets.PORTFOLIO_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./
