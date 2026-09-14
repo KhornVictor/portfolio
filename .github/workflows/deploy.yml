@@ -38,5 +38,5 @@ jobs:
           username: ${{ secrets.PORTFOLIO_USERNAME }}
           password: ${{ secrets.PORTFOLIO_PASSWORD }}
           local_path: ./dist/*
-          remote_path: /home/khorjzbf/public_html
+          remote_path: /home/khorjzbf/public_html/portfolio
           sftp_only: true
