@@ -4,7 +4,8 @@
 import { ref } from "vue";
 
 const playing = ref(false);
+const title = ref(""); // current track name (shown in the status bar)
 
 export function useMusicState() {
-  return { playing };
+  return { playing, title };
 }

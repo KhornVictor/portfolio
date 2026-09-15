@@ -60,8 +60,8 @@ function selectAll(e: FocusEvent) {
 
     <!-- Request -->
     <section class="rounded-2xl">
-      <div class="flex flex-wrap items-center gap-2 border-b border-black/5 p-3">
-        <span class="rounded-md bg-amber-100 px-2 py-1 font-mono text-xs font-semibold text-amber-800">POST</span>
+      <div class="flex flex-wrap items-center gap-2 border-b border-ink/5 p-3">
+        <span class="rounded-md bg-amber-500/15 px-2 py-1 font-mono text-xs font-semibold text-amber-700 dark:text-amber-300">POST</span>
         <code class="min-w-0 flex-1 truncate font-mono text-sm text-ink/80">{{ API_URL }}/api/auth/access-link</code>
         <button type="button" class="btn btn-dark py-2! text-sm" :disabled="sending" @click="send">
           {{ sending ? "Sending…" : "Send" }}
@@ -76,7 +76,7 @@ function selectAll(e: FocusEvent) {
             type="number"
             min="1"
             max="90"
-            class="rounded-xl border border-black/10 bg-white px-3 py-2 outline-none focus:border-ink"
+            class="rounded-xl border border-ink/10 bg-surface px-3 py-2 outline-none focus:border-ink"
           />
         </label>
         <label class="flex flex-col gap-1 text-sm">
@@ -84,24 +84,24 @@ function selectAll(e: FocusEvent) {
           <input
             v-model="path"
             type="text"
-            class="rounded-xl border border-black/10 bg-white px-3 py-2 font-mono outline-none focus:border-ink"
+            class="rounded-xl border border-ink/10 bg-surface px-3 py-2 font-mono outline-none focus:border-ink"
           />
         </label>
 
         <div class="sm:col-span-2">
           <p class="mb-1 text-xs font-medium uppercase tracking-wide text-ink/45">Body · JSON</p>
-          <pre class="overflow-x-auto rounded-xl bg-ink p-3 font-mono text-xs leading-relaxed text-white/90">{{ requestBody }}</pre>
+          <pre class="overflow-x-auto rounded-xl bg-ink p-3 font-mono text-xs leading-relaxed text-paper/90">{{ requestBody }}</pre>
         </div>
       </div>
     </section>
 
-    <p v-if="error" class="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ error }}</p>
+    <p v-if="error" class="rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-600">{{ error }}</p>
 
     <!-- Response -->
     <section v-if="result" class="">
-      <div class="flex flex-wrap items-center gap-2 border-b border-black/5 p-3">
+      <div class="flex flex-wrap items-center gap-2 border-b border-ink/5 p-3">
         <span class="text-sm font-medium">Response</span>
-        <span class="rounded-md bg-emerald-100 px-2 py-0.5 font-mono text-xs font-semibold text-emerald-800">200 OK</span>
+        <span class="rounded-md bg-emerald-500/15 px-2 py-0.5 font-mono text-xs font-semibold text-emerald-700 dark:text-emerald-300">200 OK</span>
         <span class="ml-auto text-xs text-ink/50">expires {{ fmtDate(result.expiresAt) }}</span>
       </div>
 
@@ -116,7 +116,7 @@ function selectAll(e: FocusEvent) {
           <input
             :value="shareUrl"
             readonly
-            class="w-full rounded-xl border border-black/10 bg-white px-3 py-2 font-mono text-xs outline-none focus:border-ink"
+            class="w-full rounded-xl border border-ink/10 bg-surface px-3 py-2 font-mono text-xs outline-none focus:border-ink"
             @focus="selectAll"
           />
         </div>
@@ -128,7 +128,7 @@ function selectAll(e: FocusEvent) {
               {{ copied === "token" ? "Copied ✓" : "Copy token" }}
             </button>
           </div>
-          <pre class="overflow-x-auto rounded-xl bg-ink p-3 font-mono text-xs leading-relaxed text-white/90">{{ responseBody }}</pre>
+          <pre class="overflow-x-auto rounded-xl bg-ink p-3 font-mono text-xs leading-relaxed text-paper/90">{{ responseBody }}</pre>
         </div>
       </div>
     </section>
@@ -136,7 +136,7 @@ function selectAll(e: FocusEvent) {
     <!-- Session history -->
     <section v-if="history.length > 1">
       <p class="mb-2 text-xs font-medium uppercase tracking-wide text-ink/45">Generated this session</p>
-      <ul class="divide-y divide-black/5 rounded-2xl border border-black/8 bg-white/60">
+      <ul class="divide-y divide-ink/5 rounded-2xl border border-ink/8 bg-surface/60">
         <li v-for="h in history" :key="h.token" class="flex flex-wrap items-center gap-3 px-4 py-2.5 text-sm">
           <span class="text-ink/60">{{ fmtDate(h.createdAt) }}</span>
           <span class="text-xs text-ink/45">→ expires {{ fmtDate(h.expiresAt) }} ({{ h.days }}d)</span>

@@ -149,11 +149,12 @@ const year = new Date().getFullYear();
         <!-- Hero -->
         <section
           id="home"
-          class="panel relative flex flex-col overflow-hidden pb-2 h-screen"
+          class="panel relative flex flex-col overflow-hidden pb-2 pt-14 h-screen sm:pt-16"
         >
           <SiteHeader
             :navigation="navigation"
-            :available="'Available for New Project'"
+            :title="`${data.personal.name} | ${data.personal.label} in ${data.personal.location.city}`"
+            :socials="socials"
             :talk-href="talkHref"
           />
           <Hero

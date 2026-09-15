@@ -70,14 +70,15 @@ function onSubmit() {
 <style scoped>
 .field {
   border-radius: 0.75rem;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  background: #fff;
+  border: 1px solid color-mix(in srgb, var(--color-ink) 10%, transparent);
+  background: var(--color-surface);
+  color: var(--color-ink);
   padding: 0.6rem 0.8rem;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
 .field:focus {
   border-color: var(--color-ink);
-  box-shadow: 0 0 0 3px rgba(13, 13, 15, 0.08);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-ink) 8%, transparent);
 }
 </style>

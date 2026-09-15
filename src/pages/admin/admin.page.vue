@@ -152,7 +152,7 @@ const heading = computed(
           autocomplete="current-password"
           placeholder="Password"
           required
-          class="mt-6 w-full rounded-xl border border-black/10 bg-white px-3 py-2.5 outline-none focus:border-ink"
+          class="mt-6 w-full rounded-xl border border-ink/10 bg-surface px-3 py-2.5 outline-none focus:border-ink"
         />
         <p v-if="loginError" class="mt-2 text-sm text-rose-600">{{ loginError }}</p>
         <button type="submit" class="btn btn-dark mt-4 w-full justify-center" :disabled="loggingIn">
@@ -176,7 +176,7 @@ const heading = computed(
             :key="s.name"
             type="button"
             class="rounded-full px-3 py-2 text-left text-sm font-medium transition lg:rounded-xl"
-            :class="!activeTool && active.name === s.name ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/5 hover:text-ink'"
+            :class="!activeTool && active.name === s.name ? 'bg-ink text-paper' : 'text-ink/60 hover:bg-ink/5 hover:text-ink'"
             @click="active = s; activeTool = null"
           >
             {{ s.label }}
@@ -189,13 +189,13 @@ const heading = computed(
             :key="t.name"
             type="button"
             class="rounded-full px-3 py-2 text-left text-sm font-medium transition lg:rounded-xl"
-            :class="activeTool === t.name ? 'bg-ink text-white' : 'text-ink/60 hover:bg-black/5 hover:text-ink'"
+            :class="activeTool === t.name ? 'bg-ink text-paper' : 'text-ink/60 hover:bg-ink/5 hover:text-ink'"
             @click="activeTool = t.name"
           >
             {{ t.label }}
           </button>
         </nav>
-        <div class="mt-4 flex flex-col gap-1 border-t border-black/5 px-2 pt-3 text-xs text-ink/45">
+        <div class="mt-4 flex flex-col gap-1 border-t border-ink/5 px-2 pt-3 text-xs text-ink/45">
           <a href="/main" target="_blank" class="hover:text-ink">View /main ↗</a>
           <a href="/client" target="_blank" class="hover:text-ink">View /client ↗</a>
         </div>
@@ -217,7 +217,7 @@ const heading = computed(
           </div>
         </div>
 
-        <p v-if="error && !activeTool" class="mb-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{{ error }}</p>
+        <p v-if="error && !activeTool" class="mb-4 rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-600">{{ error }}</p>
 
         <!-- Tools -->
         <AccessLinks v-if="activeTool === 'access-links'" />
@@ -235,21 +235,21 @@ const heading = computed(
 
         <!-- List sections -->
         <template v-else>
-          <div v-if="adding" class="mb-8 rounded-2xl border border-black/8 bg-white/60 p-5">
+          <div v-if="adding" class="mb-8 rounded-2xl border border-ink/8 bg-surface/60 p-5">
             <h2 class="mb-4 font-semibold">New {{ active.label.replace(/s$/, "").toLowerCase() }}</h2>
             <RecordForm :def="active" :doc="{}" :saving="saving" submit-label="Add" @submit="createItem" @cancel="adding = false" />
           </div>
 
           <p v-if="!items.length && !adding" class="text-sm text-ink/50">Nothing here yet.</p>
 
-          <ul class="divide-y divide-black/5">
+          <ul class="divide-y divide-ink/5">
             <li v-for="item in items" :key="item._id" class="py-3">
               <div class="flex items-center justify-between gap-3">
                 <span class="font-medium">{{ title(item) }}</span>
                 <div class="flex shrink-0 gap-2 text-sm">
                   <button
                     type="button"
-                    class="rounded-full px-3 py-1 text-ink/60 hover:bg-black/5 hover:text-ink"
+                    class="rounded-full px-3 py-1 text-ink/60 hover:bg-ink/5 hover:text-ink"
                     @click="editing = editing?._id === item._id ? null : item; adding = false"
                   >
                     {{ editing?._id === item._id ? "Close" : "Edit" }}
@@ -257,7 +257,7 @@ const heading = computed(
                   <button
                     v-if="pendingDelete?._id !== item._id"
                     type="button"
-                    class="rounded-full px-3 py-1 text-rose-600 hover:bg-rose-50"
+                    class="rounded-full px-3 py-1 text-rose-600 hover:bg-rose-500/10"
                     @click="pendingDelete = item"
                   >
                     Delete
@@ -266,13 +266,13 @@ const heading = computed(
                     <button type="button" class="rounded-full bg-rose-600 px-3 py-1 text-white" :disabled="saving" @click="removeItem(item); pendingDelete = null">
                       Confirm
                     </button>
-                    <button type="button" class="rounded-full px-3 py-1 text-ink/60 hover:bg-black/5" @click="pendingDelete = null">
+                    <button type="button" class="rounded-full px-3 py-1 text-ink/60 hover:bg-ink/5" @click="pendingDelete = null">
                       Cancel
                     </button>
                   </template>
                 </div>
               </div>
-              <div v-if="editing?._id === item._id" class="mt-4 rounded-2xl border border-black/8 bg-white/60 p-5">
+              <div v-if="editing?._id === item._id" class="mt-4 rounded-2xl border border-ink/8 bg-surface/60 p-5">
                 <RecordForm :def="active" :doc="editing" :saving="saving" @submit="updateItem" @cancel="editing = null" />
               </div>
             </li>

@@ -1,60 +1,159 @@
 <script setup lang="ts">
-import ArrowIcon from "../ui/ArrowIcon.vue";
+// Waybar / Hyprland-style status bar: a slim dark strip in a monospace face
+// with three groups — window title (left), clock + nav (center) and
+// now-playing / socials / system-ish toggles (right).
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import SocialIcon from "../ui/SocialIcon.vue";
 import { useTheme } from "../../composables/useTheme";
+import { useMusicState } from "../../composables/useMusicState";
 
-const { isDark, toggle: toggleTheme } = useTheme();
-
-defineProps<{
+const props = defineProps<{
   navigation: { label: string; href: string; count?: string }[];
-  available: string;
+  /** "Window title" shown next to the favicon. */
+  title: string;
+  socials: { network: string; url: string }[];
   talkHref: string;
 }>();
+
+const { isDark, toggle: toggleTheme } = useTheme();
+const music = useMusicState();
+
+// Live clock, "Tue, 15 Sep 14:16"
+const now = ref(new Date());
+let clock: ReturnType<typeof setInterval> | undefined;
+const time = computed(() => {
+  const d = now.value;
+  const day = d.toLocaleDateString("en-GB", { weekday: "short" });
+  const date = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
+  const hm = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return `${day}, ${date} ${hm}`;
+});
+
+// Nav entries get a glyph so they read like tray icons.
+const NAV_ICONS: Record<string, string> = {
+  work: "fa-solid fa-chart-simple",
+  service: "fa-solid fa-terminal",
+  experience: "fa-solid fa-briefcase",
+  contact: "fa-solid fa-paper-plane",
+};
+const nav = computed(() =>
+  props.navigation.map((n) => ({
+    ...n,
+    icon: NAV_ICONS[n.label.toLowerCase()] ?? "fa-solid fa-circle-dot",
+  })),
+);
+
+const locale = navigator.language || "en-US";
+
+const fullscreen = ref(false);
+function toggleFullscreen() {
+  if (document.fullscreenElement) void document.exitFullscreen();
+  else void document.documentElement.requestFullscreen?.();
+}
+const onFsChange = () => (fullscreen.value = !!document.fullscreenElement);
+
+// Hide on scroll down, reveal on scroll up (with a little slack so tiny
+// wobbles don't flicker it). Always shown near the top of the page.
+const hidden = ref(false);
+let lastY = window.scrollY;
+let ticking = false;
+const SLACK = 8;
+function onScroll() {
+  if (ticking) return;
+  ticking = true;
+  requestAnimationFrame(() => {
+    const y = window.scrollY;
+    const dy = y - lastY;
+    if (y < 80) hidden.value = false;
+    else if (dy > SLACK) hidden.value = true;
+    else if (dy < -SLACK) hidden.value = false;
+    if (Math.abs(dy) > SLACK) lastY = y;
+    ticking = false;
+  });
+}
 
 const openVision = () => {
   window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
 };
+
+onMounted(() => {
+  clock = setInterval(() => (now.value = new Date()), 1000);
+  document.addEventListener("fullscreenchange", onFsChange);
+  window.addEventListener("scroll", onScroll, { passive: true });
+});
+onBeforeUnmount(() => {
+  if (clock) clearInterval(clock);
+  document.removeEventListener("fullscreenchange", onFsChange);
+  window.removeEventListener("scroll", onScroll);
+});
 </script>
 
 <template>
-  <!-- `relative` so the z-index actually applies and the header stays above
-       the hero's name / portrait layers. -->
+  <!-- Floating macOS-style glass bar, fixed to the top of the viewport. -->
   <header
-    class="relative z-50 flex items-center justify-between gap-4 px-4 py-4 sm:px-7 sm:py-6"
+    class="bar fixed inset-x-3 top-3 z-50 flex items-center gap-3 px-3 sm:inset-x-4 sm:top-4 sm:px-4"
+    :class="{ 'is-hidden': hidden }"
   >
-    <!-- Availability badge -->
-    <span class="">
-      <div
-        class="p-1 bg-green-500/70 rounded-full inline-flex items-center shadow-2xl justify-center mr-2"
-      >
-        <img src="/favicon.png" class="h-7 w-7" alt="" />
-      </div>
-    </span>
-
-    <!-- Center navigation -->
-    <nav
-      class="absolute left-1/2 hidden z-100 -translate-x-1/2 items-center gap-7 lg:flex"
-      aria-label="Primary"
-    >
-      <a
-        v-for="item in navigation"
-        :key="item.href"
-        :href="item.href"
-        class="group text-[0.95rem] font-medium text-ink/80 transition hover:text-ink"
-      >
-        {{ item.label }}
-        <sup
-          v-if="item.count"
-          class="ml-0.5 text-[0.62rem] font-semibold text-ink/35"
-          >[{{ item.count }}]</sup
-        >
-      </a>
-    </nav>
-
-    <!-- CTA -->
-    <div class="flex items-center gap-4">
+    <!-- Left: settings · favicon · window title -->
+    <div class="flex min-w-0 items-center gap-2.5">
       <button
         type="button"
-        class="icon-btn theme-toggle text-xl"
+        class="tray-btn hoverRotate"
+        aria-label="Settings"
+        title="Settings"
+        @click="openVision"
+      >
+        <i class="fa-solid fa-gear"></i>
+      </button>
+      <img src="/favicon.png" class="h-4 w-4 shrink-0" alt="" />
+      <span class="win-title truncate">{{ title }}</span>
+    </div>
+
+    <!-- Center: clock + nav tray (absolutely centered so it ignores side widths) -->
+    <div
+      class="absolute left-1/2 hidden -translate-x-1/2 items-center gap-5 md:flex"
+    >
+      <time class="clock" :datetime="now.toISOString()">{{ time }}</time>
+      <nav class="flex items-center gap-1" aria-label="Primary">
+        <a
+          v-for="item in nav"
+          :key="item.href"
+          :href="item.href"
+          class="tray-btn"
+          :title="item.count ? `${item.label} [${item.count}]` : item.label"
+          :aria-label="item.label"
+        >
+          <i :class="item.icon"></i>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Right: now playing · socials · theme · locale · fullscreen · talk -->
+    <div class="ml-auto flex items-center gap-2 sm:gap-3">
+      <!-- Now playing (only while the disc is spinning) -->
+      <span v-if="music.playing.value" class="now-playing hidden items-center gap-2 lg:flex">
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="max-w-52 truncate">{{ music.title.value }}</span>
+      </span>
+
+      <span class="hidden items-center gap-1 sm:flex">
+        <a
+          v-for="s in socials"
+          :key="s.network"
+          class="tray-btn"
+          :href="s.url"
+          target="_blank"
+          rel="noreferrer"
+          :title="s.network"
+          :aria-label="s.network"
+        >
+          <SocialIcon :name="s.network" :size="13" />
+        </a>
+      </span>
+
+      <button
+        type="button"
+        class="tray-btn theme-toggle"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
         :title="isDark ? 'Light mode' : 'Dark mode'"
         :aria-pressed="isDark"
@@ -62,69 +161,164 @@ const openVision = () => {
       >
         <i class="fa-solid" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
       </button>
+
       <button
         type="button"
-        class="icon-btn hoverRotate text-xl"
-        aria-label="Settings"
-        title="Settings"
-        @click="openVision"
-      >
-        <i class="fa-solid fa-gear"></i>
-      </button>
-      <button
-        type="button"
-        class="icon-btn text-xl"
+        class="tray-btn"
         aria-label="Vision"
         title="Vision"
         @click="openVision"
       >
         <i class="fa-solid fa-eye"></i>
       </button>
+
+      <span class="locale hidden sm:inline">{{ locale }}</span>
+
+      <button
+        type="button"
+        class="tray-btn hidden sm:inline-flex"
+        :aria-label="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
+        :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
+        @click="toggleFullscreen"
+      >
+        <i class="fa-solid" :class="fullscreen ? 'fa-compress' : 'fa-expand'"></i>
+      </button>
+
       <a
-        class="btn btn-dark py-2.5! px-4! text-sm"
+        class="tray-btn power"
         target="_blank"
         rel="noreferrer"
         :href="talkHref"
+        title="Let's talk"
+        aria-label="Let's talk"
       >
-        Let's Talk
-        <ArrowIcon :size="15" />
+        <i class="fa-solid fa-power-off"></i>
       </a>
     </div>
   </header>
 </template>
 
 <style scoped>
-.icon-btn {
+.bar {
+  height: 2.5rem;
+  border-radius: 0.9rem;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.78rem;
+  color: color-mix(in srgb, var(--color-ink) 82%, transparent);
+  background: color-mix(in srgb, var(--color-paper) 58%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-surface) 70%, transparent);
+  box-shadow:
+    0 18px 40px -18px rgba(var(--shadow-ink), 0.45),
+    0 1px 2px rgba(var(--shadow-ink), 0.08),
+    inset 0 1px 0 var(--panel-edge);
+  backdrop-filter: blur(22px) saturate(1.8);
+  -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  transition:
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+/* Slide up out of view (past its own top offset) when scrolling down. */
+.bar.is-hidden {
+  transform: translateY(calc(-100% - 1.5rem));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.win-title {
+  color: color-mix(in srgb, var(--color-ink) 72%, transparent);
+  letter-spacing: 0.01em;
+}
+
+.clock {
+  color: color-mix(in srgb, var(--color-ink) 85%, transparent);
+  white-space: nowrap;
+}
+
+.locale {
+  color: color-mix(in srgb, var(--color-ink) 70%, transparent);
+}
+
+/* Small square tray buttons */
+.tray-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 999px;
-  color: var(--color-ink);
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 0.45rem;
+  color: color-mix(in srgb, var(--color-ink) 78%, transparent);
+  font-size: 0.8rem;
+  line-height: 1;
+  text-decoration: none;
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    transform 0.2s ease;
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease;
 }
 
-.hoverRotate{
-  transition: transform 0.2s ease;
+.tray-btn:hover {
+  background: color-mix(in srgb, var(--color-ink) 10%, transparent);
+  color: var(--color-ink);
+}
+
+.tray-btn:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 1px;
+}
+
+.power {
+  color: #e5484d;
+}
+
+.power:hover {
+  background: rgba(229, 72, 77, 0.16);
+  color: #ff6b70;
 }
 
 .hoverRotate:hover {
-  transition: transform 0.2s ease;
   transform: rotate(20deg);
 }
 
-.icon-btn:hover {
-  background: color-mix(in srgb, var(--color-ink) 6%, transparent);
-  transform: translateY(-1px);
+/* Now playing: tiny animated equaliser + title */
+.now-playing {
+  color: color-mix(in srgb, var(--color-ink) 82%, transparent);
 }
 
-.icon-btn:focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
+.eq {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 0.75rem;
+}
+
+.eq i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  background: currentColor;
+  border-radius: 1px;
+  transform-origin: bottom;
+  animation: eq-bounce 0.9s ease-in-out infinite;
+}
+
+.eq i:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.eq i:nth-child(3) {
+  animation-delay: -0.6s;
+}
+
+@keyframes eq-bounce {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
 }
 
 /* Little spin when the theme icon swaps */
@@ -144,7 +338,14 @@ const openVision = () => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-toggle i {
+  .bar {
+    transition: opacity 0.2s ease;
+  }
+  .bar.is-hidden {
+    transform: none;
+  }
+  .theme-toggle i,
+  .eq i {
     animation: none;
   }
 }

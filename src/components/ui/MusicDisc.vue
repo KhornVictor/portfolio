@@ -33,6 +33,7 @@ const playing = ref(false);
 // Broadcast play state so the hero's binary grid can dance along.
 const shared = useMusicState();
 watch(playing, (v) => (shared.playing.value = v));
+watch(track, (t) => (shared.title.value = t?.title ?? ""), { immediate: true });
 const NOTE_CYCLE_S = 2.4;
 const NOTES = ["♪", "♫", "♩", "♬", "♪", "♫"].map((glyph, i, all) => {
   const dir = i % 2 ? -1 : 1;
