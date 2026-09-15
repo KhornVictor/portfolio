@@ -1,5 +1,4 @@
-// Loads the portfolio content from the Express API (see ../../personal).
-// Everything is typed so the components get autocomplete + safety.
+import { env } from "../config/env.config";
 
 export interface Personal {
   name: string;
@@ -88,7 +87,7 @@ export interface Portfolio {
 
 // In dev the Vite proxy forwards /api -> http://localhost:5000 (vite.config.ts).
 // In production set VITE_API_URL to the deployed backend, e.g. https://api.example.com
-const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const API_URL = env.apiUrl;
 
 async function getJSON<T>(path: string): Promise<T> {
   const res = await fetch(`${API_URL}${path}`);

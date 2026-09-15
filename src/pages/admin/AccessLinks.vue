@@ -5,8 +5,9 @@
 import { computed, ref } from "vue";
 import { createAccessLink, type AccessLink } from "../../service/admin.service";
 import { buildAccessUrl } from "../../service/access.service";
+import { env } from "../../config/env.config";
 
-const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "") || window.location.origin;
+const API_URL = env.publicApiUrl;
 
 const days = ref(7);
 const path = ref("/main");

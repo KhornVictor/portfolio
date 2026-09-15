@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useAudioLevels, type AudioSource } from "../../composables/useAudioLevels";
 
 const props = withDefaults(
   defineProps<{
@@ -31,6 +32,21 @@ let active = false;
 const BASE_ALPHA = 0.05;
 const MAX_ALPHA = 0.85;
 
+// CAVA-style spectrum: every column of the grid is one frequency bar that
+// rises from the bottom. `levels` holds the smoothed bar heights (0..1).
+const audio = useAudioLevels();
+let levels = new Float32Array(0);
+const BAR_ALPHA = 0.75; // brightness of cells inside a bar
+const PEAK_ALPHA = 1; // the sinking peak marker on top of each bar
+
+defineExpose({
+  startAudio: (source: AudioSource) => audio.start(source),
+  stopAudio: () => audio.stop(),
+  audioActive: audio.active,
+  audioSource: audio.source,
+  audioError: audio.error,
+});
+
 function resize() {
   const el = canvas.value;
   if (!el || !ctx) return;
@@ -49,6 +65,7 @@ function resize() {
   const next = new Uint8Array(cols * rows);
   for (let i = 0; i < next.length; i++) next[i] = Math.random() < 0.5 ? 1 : 0;
   bits = next;
+  levels = new Float32Array(cols);
 }
 
 function frame() {
@@ -70,7 +87,12 @@ function frame() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
+  // Pull fresh bar heights from the analyser (no-op when audio is off).
+  const music = audio.sample(levels);
+
   for (let r = 0; r < rows; r++) {
+    // Rows counted from the bottom, so bars grow upward like CAVA.
+    const fromBottom = rows - 1 - r;
     for (let c = 0; c < cols; c++) {
       const idx = r * cols + c;
       const cx = c * cell + cell / 2;
@@ -95,11 +117,26 @@ function frame() {
         }
       }
 
-      // Randomly flip the bit — faster near the cursor
-      if (Math.random() < 0.004 + intensity * 0.06) bits[idx] ^= 1;
+      // Spectrum bar for this column: cells below the bar height light up,
+      // the topmost lit cell (or the held peak) glows brightest.
+      let bar = 0;
+      if (music) {
+        const height = levels[c] * rows;
+        const peakRow = Math.round(audio.peakOf(c) * rows);
+        if (fromBottom < height) {
+          // Brighter toward the top of the bar.
+          bar = BAR_ALPHA * (0.45 + 0.55 * (fromBottom / Math.max(height, 1)));
+        } else if (fromBottom === peakRow && peakRow > 0) {
+          bar = PEAK_ALPHA;
+        }
+      }
 
-      const alpha = BASE_ALPHA + intensity * (MAX_ALPHA - BASE_ALPHA);
-      const size = 13 + intensity * 5;
+      // Randomly flip the bit — faster near the cursor and inside a bar
+      if (Math.random() < 0.004 + intensity * 0.06 + bar * 0.15) bits[idx] ^= 1;
+
+      const glow = Math.max(intensity, bar);
+      const alpha = BASE_ALPHA + glow * (MAX_ALPHA - BASE_ALPHA);
+      const size = 13 + glow * 5;
       ctx.font = `${size}px "JetBrains Mono", ui-monospace, monospace`;
       ctx.fillStyle = `rgba(${props.color}, ${alpha})`;
       ctx.fillText(bits[idx] ? "1" : "0", cx + ox, cy + oy);
@@ -180,6 +217,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(raf);
+  audio.stop();
   ro?.disconnect();
   window.removeEventListener("pointermove", onMove);
   window.removeEventListener("pointerleave", onLeave);

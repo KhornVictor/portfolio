@@ -1,11 +1,10 @@
-// Admin-only API: password login + CRUD on every portfolio section.
-// The token is kept in localStorage so a refresh doesn't log the admin out.
 import type { Portfolio } from "./portfolio.service";
+import { env } from "../config/env.config";
 
 export type SectionName = keyof Portfolio;
 export type WithId<T> = T & { _id: string };
 
-const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const API_URL = env.apiUrl;
 const TOKEN_KEY = "portfolio.admin.token";
 
 export function getToken(): string | null {

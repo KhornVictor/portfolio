@@ -5,6 +5,7 @@ import SocialIcon from "../ui/SocialIcon.vue";
 import BinaryGrid from "../ui/BinaryGrid.vue";
 import EasterEggCard from "../ui/EasterEggCard.vue";
 import { imageUrl } from "../../config/assets";
+import type { AudioSource } from "../../composables/useAudioLevels";
 
 const props = defineProps<{
   name: string;
@@ -61,6 +62,63 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
+// Mouse parallax: the portrait drifts and tilts toward the cursor while it is
+// over the hero, then eases back to center. Driven through CSS variables on
+// the frame so it composes with the glitch animation on the <img>.
+const PARALLAX_SHIFT = 18; // px of travel at the hero's edge
+const PARALLAX_TILT = 6; // deg of rotation at the hero's edge
+const root = ref<HTMLElement | null>(null);
+const target = { x: 0, y: 0 };
+const current = { x: 0, y: 0 };
+let raf: number | undefined;
+let parallaxEnabled = false;
+
+function tick() {
+  // Lerp toward the target for a smooth, slightly lagging follow.
+  current.x += (target.x - current.x) * 0.12;
+  current.y += (target.y - current.y) * 0.12;
+  const el = frame.value;
+  if (el) {
+    el.style.setProperty("--px", `${(current.x * PARALLAX_SHIFT).toFixed(2)}px`);
+    el.style.setProperty("--py", `${(current.y * PARALLAX_SHIFT).toFixed(2)}px`);
+    el.style.setProperty("--rx", `${(-current.y * PARALLAX_TILT).toFixed(2)}deg`);
+    el.style.setProperty("--ry", `${(current.x * PARALLAX_TILT).toFixed(2)}deg`);
+  }
+  const settled = Math.abs(target.x - current.x) < 0.001 && Math.abs(target.y - current.y) < 0.001;
+  raf = settled ? undefined : requestAnimationFrame(tick);
+}
+
+function scheduleTick() {
+  if (raf === undefined) raf = requestAnimationFrame(tick);
+}
+
+function onPointerMove(e: PointerEvent) {
+  if (!parallaxEnabled || e.pointerType !== "mouse") return;
+  const rect = root.value?.getBoundingClientRect();
+  if (!rect) return;
+  // Normalise the cursor to -1..1 across the hero, 0 at the center.
+  target.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  target.y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+  scheduleTick();
+}
+
+function onPointerLeave() {
+  target.x = 0;
+  target.y = 0;
+  scheduleTick();
+}
+
+onMounted(() => {
+  // Skip on touch devices and for users who prefer reduced motion.
+  parallaxEnabled =
+    window.matchMedia("(hover: hover)").matches &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+});
+
+onBeforeUnmount(() => {
+  if (raf !== undefined) cancelAnimationFrame(raf);
+});
+
 const SECRET = "NITH";
 const IDLE_RESET_MS = 30_000;
 const typed = ref<string[]>([]);
@@ -85,6 +143,28 @@ onBeforeUnmount(() => {
   if (idleTimer) clearTimeout(idleTimer);
 });
 
+// Audio-reactive background (CAVA-style bars in the binary grid). Needs a
+// click: browsers only hand out system/mic audio after a permission prompt.
+const grid = ref<InstanceType<typeof BinaryGrid> | null>(null);
+const audioBusy = ref(false);
+const audioError = ref("");
+const audioOn = computed(() => grid.value?.audioActive ?? false);
+
+async function toggleAudio(source: AudioSource = "system") {
+  const g = grid.value;
+  if (!g || audioBusy.value) return;
+  audioError.value = "";
+  if (g.audioActive) return g.stopAudio();
+  audioBusy.value = true;
+  try {
+    await g.startAudio(source);
+  } catch (e) {
+    audioError.value = e instanceof Error ? e.message : String(e);
+  } finally {
+    audioBusy.value = false;
+  }
+}
+
 const nameParts = computed(() => {
   const bits = props.name.trim().split(/\s+/);
   return { first: bits[0] ?? "", rest: bits.slice(1).join(" ") };
@@ -103,9 +183,32 @@ const socials = computed(() => [
 </script>
 
 <template>
-  <div class="relative flex w-full flex-1 flex-col px-4 py-4 sm:px-7 sm:py-6">
+  <div
+    ref="root"
+    class="relative flex w-full flex-1 flex-col px-4 py-4 sm:px-7 sm:py-6"
+    @pointermove="onPointerMove"
+    @pointerleave="onPointerLeave"
+  >
     <!-- Binary grid background -->
-    <BinaryGrid class="pointer-events-none absolute inset-0 z-0" />
+    <BinaryGrid ref="grid" class="pointer-events-none absolute inset-0 z-0" />
+
+    <!-- Music visualizer toggle: left click = system/tab audio, right click = microphone -->
+    <div class="absolute right-4 top-4 z-40 flex flex-col items-end gap-1 sm:right-7 sm:top-6">
+      <button
+        type="button"
+        class="pill audio-toggle transition hover:-translate-y-0.5 hover:shadow-md"
+        :class="{ 'is-on': audioOn }"
+        :disabled="audioBusy"
+        :aria-pressed="audioOn"
+        :title="audioOn ? 'Stop visualizer' : 'Visualize what is playing (right-click for microphone)'"
+        @click="toggleAudio('system')"
+        @contextmenu.prevent="toggleAudio('mic')"
+      >
+        <i class="fa-solid fa-music"></i>
+        <span class="text-xs">{{ audioOn ? "Listening…" : audioBusy ? "…" : "Visualize" }}</span>
+      </button>
+      <span v-if="audioError" class="max-w-60 text-right text-xs text-red-600">{{ audioError }}</span>
+    </div>
 
     <!-- Giant name -->
     <h1
@@ -138,7 +241,7 @@ const socials = computed(() => [
     <div
       class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-150 avatar pointer-events-none pb-10 w-full items-center justify-center"
     >
-      <div ref="frame" class="relative 2xl:w-130 xl:w-125 lg:w-117.5 w-105">
+      <div ref="frame" class="avatar-frame relative 2xl:w-130 xl:w-125 lg:w-117.5 w-105">
         <img
           :src="avatar"
           :alt="name"
@@ -378,6 +481,39 @@ const socials = computed(() => [
 .avatar-arrow:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 2px;
+}
+
+/* Mouse parallax (variables are written from the script on every frame) */
+.avatar-frame {
+  --px: 0px;
+  --py: 0px;
+  --rx: 0deg;
+  --ry: 0deg;
+  transform: perspective(1200px) translate3d(var(--px), var(--py), 0)
+    rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Visualizer toggle: pulse while listening */
+.audio-toggle.is-on {
+  animation: audio-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes audio-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(15, 15, 17, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(15, 15, 17, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .audio-toggle.is-on {
+    animation: none;
+  }
 }
 
 /* TikTok-style glitch transition between avatars */

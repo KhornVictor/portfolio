@@ -1,9 +1,6 @@
-// Access links for the private /main page.
-// The admin mints a token (default 7 days); visitors open /main?token=...
-// The token is verified against the API, then kept in localStorage so the
-// visitor can keep browsing /main until it expires without re-pasting the URL.
+import { env } from "../config/env.config";
 
-const API_URL = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+const API_URL = env.apiUrl;
 const ACCESS_KEY = "portfolio.access.token";
 export const TOKEN_PARAM = "token";
 
