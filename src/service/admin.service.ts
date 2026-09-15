@@ -74,6 +74,39 @@ export function createAccessLink(days = 7) {
   });
 }
 
+// ---- photos (upload goes to Supabase Storage via the API) ----
+export type PhotoKind = "profile" | "gallery";
+export interface AdminPhoto {
+  _id: string;
+  url: string;
+  path: string;
+  kind: PhotoKind;
+  caption?: string;
+  createdAt?: string;
+}
+
+function readAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(String(r.result));
+    r.onerror = () => reject(r.error ?? new Error("Could not read file"));
+    r.readAsDataURL(file);
+  });
+}
+
+export const photos = {
+  list: (kind?: PhotoKind) =>
+    request<AdminPhoto[]>(`/api/admin/photos${kind ? `?kind=${kind}` : ""}`),
+  upload: async (file: File, kind: PhotoKind, caption = "") =>
+    request<AdminPhoto>("/api/admin/photos", {
+      method: "POST",
+      body: JSON.stringify({ name: file.name, type: file.type, data: await readAsDataUrl(file), kind, caption }),
+    }),
+  update: (id: string, patch: Partial<Pick<AdminPhoto, "kind" | "caption">>) =>
+    request<AdminPhoto>(`/api/admin/photos/${id}`, { method: "PUT", body: JSON.stringify(patch) }),
+  remove: (id: string) => request<void>(`/api/admin/photos/${id}`, { method: "DELETE" }),
+};
+
 export const admin = {
   list: <T>(section: SectionName) => request<T>(`/api/admin/${section}`),
   replaceSingle: <T>(section: SectionName, data: T) =>

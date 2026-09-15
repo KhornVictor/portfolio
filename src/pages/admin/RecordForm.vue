@@ -26,16 +26,17 @@ function onSubmit() {
       v-for="f in def.fields"
       :key="f.key"
       class="flex flex-col gap-1.5 text-sm"
-      :class="{ 'sm:col-span-2': f.type !== 'text' }"
+      :class="{ 'sm:col-span-2': f.type === 'textarea' || f.type === 'list' }"
     >
       <span class="font-medium text-ink/80">
         {{ f.label }}
         <span v-if="f.required" class="text-rose-500">*</span>
       </span>
       <input
-        v-if="f.type === 'text'"
+        v-if="f.type === 'text' || f.type === 'number'"
         v-model="form[f.key]"
-        type="text"
+        :type="f.type"
+        :step="f.type === 'number' ? 'any' : undefined"
         :required="f.required"
         :placeholder="f.hint"
         class="field"

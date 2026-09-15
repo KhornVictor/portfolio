@@ -70,6 +70,18 @@ export interface Language {
 export interface Music {
   title: string;
   url: string;
+  /** Tempo in BPM (default 112) — the dance follows this. */
+  bpm?: number;
+  /** Movement intensity, 0.3 = calm … 2 = wild (default 1). */
+  energy?: number;
+}
+
+/** Uploaded image. `profile` photos cycle in the hero; `gallery` is general. */
+export interface Photo {
+  url: string;
+  path: string;
+  kind: "profile" | "gallery";
+  caption?: string;
 }
 
 export interface Service {
@@ -90,6 +102,7 @@ export interface Portfolio {
   languages: Language[];
   services: Service[];
   music: Music[];
+  photos: Photo[];
 }
 
 // In dev the Vite proxy forwards /api -> http://localhost:5000 (vite.config.ts).

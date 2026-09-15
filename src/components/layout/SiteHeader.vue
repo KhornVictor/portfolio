@@ -1,15 +1,11 @@
 <script setup lang="ts">
-// Waybar / Hyprland-style status bar: a slim dark strip in a monospace face
-// with three groups — window title (left), clock + nav (center) and
-// now-playing / socials / system-ish toggles (right).
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import SocialIcon from "../ui/SocialIcon.vue";
 import { useTheme } from "../../composables/useTheme";
 import { useMusicState } from "../../composables/useMusicState";
+import WeatherIcon from "../ui/weatherIcon.vue";
 
 const props = defineProps<{
   navigation: { label: string; href: string; count?: string }[];
-  /** "Window title" shown next to the favicon. */
   title: string;
   socials: { network: string; url: string }[];
   talkHref: string;
@@ -24,8 +20,15 @@ let clock: ReturnType<typeof setInterval> | undefined;
 const time = computed(() => {
   const d = now.value;
   const day = d.toLocaleDateString("en-GB", { weekday: "short" });
-  const date = d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" });
-  const hm = d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false });
+  const date = d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+  });
+  const hm = d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
   return `${day}, ${date} ${hm}`;
 });
 
@@ -52,8 +55,6 @@ function toggleFullscreen() {
 }
 const onFsChange = () => (fullscreen.value = !!document.fullscreenElement);
 
-// Hide on scroll down, reveal on scroll up (with a little slack so tiny
-// wobbles don't flicker it). Always shown near the top of the page.
 const hidden = ref(false);
 let lastY = window.scrollY;
 let ticking = false;
@@ -89,12 +90,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <!-- Floating macOS-style glass bar, fixed to the top of the viewport. -->
   <header
     class="bar fixed inset-x-3 top-3 z-50 flex items-center gap-3 px-3 sm:inset-x-4 sm:top-4 sm:px-4"
     :class="{ 'is-hidden': hidden }"
   >
-    <!-- Left: settings · favicon · window title -->
     <div class="flex min-w-0 items-center gap-2.5">
       <button
         type="button"
@@ -128,28 +127,30 @@ onBeforeUnmount(() => {
       </nav>
     </div>
 
-    <!-- Right: now playing · socials · theme · locale · fullscreen · talk -->
     <div class="ml-auto flex items-center gap-2 sm:gap-3">
       <!-- Now playing (only while the disc is spinning) -->
-      <span v-if="music.playing.value" class="now-playing hidden items-center gap-2 lg:flex">
+      <span
+        v-if="music.playing.value"
+        class="now-playing hidden items-center gap-2 lg:flex"
+      >
         <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
         <span class="max-w-52 truncate">{{ music.title.value }}</span>
       </span>
 
-      <span class="hidden items-center gap-1 sm:flex">
-        <a
-          v-for="s in socials"
-          :key="s.network"
-          class="tray-btn"
-          :href="s.url"
-          target="_blank"
-          rel="noreferrer"
-          :title="s.network"
-          :aria-label="s.network"
-        >
-          <SocialIcon :name="s.network" :size="13" />
-        </a>
-      </span>
+      <button
+        type="button"
+        class="tray-btn cava-toggle"
+        :class="{ 'is-on': music.visualizer.value }"
+        :aria-label="music.visualizer.value ? 'Disable music visualizer' : 'Enable music visualizer'"
+        :title="music.visualizer.value ? 'Visualizer: on' : 'Visualizer: off'"
+        :aria-pressed="music.visualizer.value"
+        @click="music.toggleVisualizer()"
+      >
+        <i class="fa-solid fa-square-binary"></i>
+      </button>
+
+      <!-- Weather (Phnom Penh): icon follows the sky, click for the card -->
+      <WeatherIcon />
 
       <button
         type="button"
@@ -181,7 +182,10 @@ onBeforeUnmount(() => {
         :title="fullscreen ? 'Exit fullscreen' : 'Fullscreen'"
         @click="toggleFullscreen"
       >
-        <i class="fa-solid" :class="fullscreen ? 'fa-compress' : 'fa-expand'"></i>
+        <i
+          class="fa-solid"
+          :class="fullscreen ? 'fa-compress' : 'fa-expand'"
+        ></i>
       </button>
 
       <a
@@ -281,7 +285,15 @@ onBeforeUnmount(() => {
   transform: rotate(20deg);
 }
 
-/* Now playing: tiny animated equaliser + title */
+.cava-toggle {
+  color: color-mix(in srgb, var(--color-ink) 40%, transparent);
+}
+
+.cava-toggle.is-on {
+  background: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  color: var(--color-ink);
+}
+
 .now-playing {
   color: color-mix(in srgb, var(--color-ink) 82%, transparent);
 }

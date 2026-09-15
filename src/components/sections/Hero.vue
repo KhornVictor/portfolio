@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
 import BinaryGrid from "../ui/BinaryGrid.vue";
 import EasterEggCard from "../ui/EasterEggCard.vue";
 import { imageUrl } from "../../config/assets";
 import { useTheme } from "../../composables/useTheme";
+import { beatAt, useMusicState } from "../../composables/useMusicState";
 
 const { isDark } = useTheme();
 // BinaryGrid takes an "r, g, b" triple; match the current ink colour.
 const gridColor = computed(() => (isDark.value ? "242, 242, 244" : "13, 13, 15"));
 
 const props = defineProps<{
+  /** Profile picture URLs uploaded via /admin → Photos. */
+  avatars?: string[];
   name: string;
   role: string;
   description: string;
   collaborateHref: string;
 }>();
 
-// Avatars cycled with a TikTok-style glitch transition.
-const avatars = [1, 2, 3, 4, 5, 7, 8].map((n) =>
-  imageUrl(`Profile/avatar${n}.png`),
-);
+// Avatars cycled with a TikTok-style glitch transition. Uploaded profile
+// pictures win; the bundled set is only a fallback until some are added.
+const FALLBACK_AVATARS = [1, 2, 3, 4, 5, 7, 8].map((n) => imageUrl(`Profile/avatar${n}.png`));
+const avatars = props.avatars?.length ? props.avatars : FALLBACK_AVATARS;
 const index = ref(0);
 const glitch = ref(false);
 const frame = ref<HTMLElement | null>(null);
@@ -30,6 +33,8 @@ const timeDuration = computed(() =>
 );
 
 let timer: ReturnType<typeof setInterval> | undefined;
+// Paused = the auto-cycle is stopped; arrows still work while paused.
+const paused = ref(false);
 
 async function goTo(step: 1 | -1) {
   if (avatars.length < 2) return;
@@ -43,9 +48,20 @@ async function goTo(step: 1 | -1) {
 
 const nextAvatar = () => goTo(1);
 
-function startTimer() {
+function stopTimer() {
   if (timer) clearInterval(timer);
+  timer = undefined;
+}
+
+function startTimer() {
+  stopTimer();
+  if (paused.value) return;
   timer = setInterval(nextAvatar, timeDuration.value);
+}
+
+function togglePause() {
+  paused.value = !paused.value;
+  startTimer();
 }
 
 // Manual navigation: swap immediately and reset the auto-cycle countdown.
@@ -63,8 +79,8 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
-const PARALLAX_SHIFT = 18; // px of travel at the hero's edge
-const PARALLAX_TILT = 6; // deg of rotation at the hero's edge
+const PARALLAX_SHIFT = 18;
+const PARALLAX_TILT = 6;
 const root = ref<HTMLElement | null>(null);
 const target = { x: 0, y: 0 };
 const current = { x: 0, y: 0 };
@@ -115,6 +131,61 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   if (raf !== undefined) cancelAnimationFrame(raf);
+});
+
+// Dance: while a track plays the portrait bobs on the kick, squashes a touch
+// on the snare and sways side to side every beat. Written to CSS variables on
+// the frame so it composes with the parallax transform above.
+const music = useMusicState();
+const BOB_PX = 6; // how far the kick lifts the portrait
+const SWAY_DEG = 1.2; // side-to-side lean per beat
+const dance = { bob: 0, sway: 0, squash: 0 };
+let danceRaf: number | undefined;
+
+function danceTick(now: number) {
+  const el = frame.value;
+  const on = music.playing.value;
+  let tBob = 0;
+  let tSway = 0;
+  let tSquash = 0;
+  if (on) {
+    const { kick, snare, beatIndex, beatPos, energy } = beatAt(now);
+    // `energy` comes from the track's metadata: calm ballads barely nod,
+    // bangers bounce hard.
+    tBob = -kick * BOB_PX * energy;
+    // Lean left on even beats, right on odd, easing across the beat.
+    const dir = beatIndex % 2 === 0 ? 1 : -1;
+    tSway = dir * SWAY_DEG * energy * Math.sin(beatPos * Math.PI);
+    tSquash = (snare * 0.015 - kick * 0.008) * energy;
+  }
+  // Quick attack, softer release so hits feel punchy but never jittery.
+  const k = on ? 0.18 : 0.1;
+  dance.bob += (tBob - dance.bob) * k;
+  dance.sway += (tSway - dance.sway) * k;
+  dance.squash += (tSquash - dance.squash) * k;
+  if (el) {
+    el.style.setProperty("--bob", `${dance.bob.toFixed(2)}px`);
+    el.style.setProperty("--sway", `${dance.sway.toFixed(2)}deg`);
+    el.style.setProperty("--sx", (1 + dance.squash).toFixed(3));
+    el.style.setProperty("--sy", (1 - dance.squash).toFixed(3));
+  }
+  const settled =
+    !on && Math.abs(dance.bob) < 0.05 && Math.abs(dance.sway) < 0.05 && Math.abs(dance.squash) < 0.001;
+  danceRaf = settled ? undefined : requestAnimationFrame(danceTick);
+}
+
+watch(
+  () => music.playing.value,
+  (on) => {
+    if (!on || danceRaf !== undefined) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    danceRaf = requestAnimationFrame(danceTick);
+  },
+  { immediate: true },
+);
+
+onBeforeUnmount(() => {
+  if (danceRaf !== undefined) cancelAnimationFrame(danceRaf);
 });
 
 const SECRET = "NITH";
@@ -190,9 +261,8 @@ const restLetters = computed(() =>
       </span>
     </h1>
 
-    <!-- Portrait -->
     <div
-      class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-150 avatar pointer-events-none pb-10 w-full items-center justify-center"
+      class="relative 2xl:z-40 mt-[-3vw] flex flex-1 md:scale-150 2xl:scale-175 avatar pointer-events-none pb-10 w-full items-center justify-center"
     >
       <div ref="frame" class="avatar-frame relative 2xl:w-130 xl:w-125 lg:w-117.5 w-105">
         <img
@@ -202,7 +272,6 @@ const restLetters = computed(() =>
           :class="{ 'is-glitching': glitch }"
           draggable="false"
         />
-        <!-- soft fade so the photo melts into the panel -->
         <div
           class="pointer-events-none absolute inset-x-0 bottom-0 w-full z-20 h-24 bg-linear-to-t from-paper to-transparent"
         ></div>
@@ -210,24 +279,29 @@ const restLetters = computed(() =>
     </div>
 
     <EasterEggCard v-if="eggOpen" @close="eggOpen = false" />
-
-    <!-- Prev / next avatar arrows, bottom-center. They sit in an invisible hover
-         zone and only rise into view while the cursor is inside it. -->
     <div v-if="avatars.length > 1" class="avatar-arrow-zone">
       <button
         type="button"
-        class="avatar-arrow"
+        class="avatar-arrow color-surface/50 hover:color-surface"
         aria-label="Previous profile"
         @click="onArrow(-1)"
       >
         <i class="fa-solid fa-caret-left"></i>
       </button>
-      <span class="avatar-count" aria-live="polite">
-        {{ index + 1 }} / {{ avatars.length }}
-      </span>
       <button
         type="button"
-        class="avatar-arrow"
+        class="avatar-arrow bg-surface/80 avatar-pause"
+        :class="{ 'is-paused': paused }"
+        :aria-label="paused ? 'Resume profile slideshow' : 'Pause profile slideshow'"
+        :title="paused ? 'Resume' : 'Pause'"
+        :aria-pressed="paused"
+        @click="togglePause"
+      >
+        <i class="fa-solid" :class="paused ? 'fa-play' : 'fa-pause'"></i>
+      </button>
+      <button
+        type="button"
+        class="avatar-arrow color-surface/50 hover:color-surface"
         aria-label="Next profile"
         @click="onArrow(1)"
       >
@@ -271,7 +345,6 @@ const restLetters = computed(() =>
 </template>
 
 <style scoped>
-/* Staggered per-letter pop-in for the giant name */
 .letter {
   display: inline-block;
   white-space: pre;
@@ -305,7 +378,7 @@ const restLetters = computed(() =>
 }
 
 .giant-name:hover ~ .avatar {
-  transform: translateY(10%);
+  transform: translateY(15%);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -337,6 +410,12 @@ const restLetters = computed(() =>
   }
 }
 
+
+
+.avatar-pause i.fa-play {
+  margin-left: 2px; /* optically centre the triangle */
+}
+
 /* Counter between the arrows, revealed together with them. */
 .avatar-count {
   font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -361,10 +440,8 @@ const restLetters = computed(() =>
   /* Hidden state: tucked down below the edge; rises into place on hover. */
   transform: translateY(1rem);
   border-radius: 999px;
-  background: var(--color-surface);
   border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
   box-shadow: 0 6px 16px -8px rgba(var(--shadow-ink), 0.35);
-  color: var(--color-ink);
   font-family: inherit;
   font-size: 1.25rem;
   font-weight: 600;
@@ -426,8 +503,14 @@ const restLetters = computed(() =>
   --py: 0px;
   --rx: 0deg;
   --ry: 0deg;
-  transform: perspective(1200px) translate3d(var(--px), var(--py), 0)
-    rotateX(var(--rx)) rotateY(var(--ry));
+  /* dance (written while music plays) */
+  --bob: 0px;
+  --sway: 0deg;
+  --sx: 1;
+  --sy: 1;
+  transform: perspective(1200px) translate3d(var(--px), calc(var(--py) + var(--bob)), 0)
+    rotateX(var(--rx)) rotateY(var(--ry)) rotate(var(--sway)) scale(var(--sx), var(--sy));
+  transform-origin: 50% 100%;
   transform-style: preserve-3d;
   will-change: transform;
 }

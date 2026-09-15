@@ -5,6 +5,7 @@ import { admin, checkSession, login, logout, type WithId } from "../../service/a
 import { SECTIONS, getPath, type Doc, type SectionDef } from "./sections";
 import RecordForm from "./RecordForm.vue";
 import AccessLinks from "./AccessLinks.vue";
+import Photos from "./Photos.vue";
 
 type Item = WithId<Doc>;
 
@@ -39,7 +40,10 @@ function onLogout() {
 
 // ---- section state ----
 // Tools live next to the data sections in the sidebar but don't hit the CRUD API.
-const TOOLS = [{ name: "access-links", label: "Access links" }] as const;
+const TOOLS = [
+  { name: "photos", label: "Photos" },
+  { name: "access-links", label: "Access links" },
+] as const;
 type ToolName = (typeof TOOLS)[number]["name"];
 const activeTool = ref<ToolName | null>(null);
 
@@ -220,7 +224,8 @@ const heading = computed(
         <p v-if="error && !activeTool" class="mb-4 rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-600">{{ error }}</p>
 
         <!-- Tools -->
-        <AccessLinks v-if="activeTool === 'access-links'" />
+        <Photos v-if="activeTool === 'photos'" />
+        <AccessLinks v-else-if="activeTool === 'access-links'" />
 
         <p v-else-if="loading" class="text-sm text-ink/50">Loading…</p>
 

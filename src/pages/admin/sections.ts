@@ -3,7 +3,7 @@
 // (e.g. "location.city"). Mirrors the Mongoose schemas in ../personal/src/models.
 import type { SectionName } from "../../service/admin.service";
 
-export type FieldType = "text" | "textarea" | "list";
+export type FieldType = "text" | "number" | "textarea" | "list";
 
 export interface Field {
   key: string;
@@ -153,6 +153,8 @@ export const SECTIONS: SectionDef[] = [
     fields: [
       { key: "title", label: "Title", type: "text", required: true },
       { key: "url", label: "YouTube URL", type: "text", required: true, hint: "watch, youtu.be, embed or shorts link" },
+      { key: "bpm", label: "Tempo (BPM)", type: "number", hint: "e.g. 92 slow · 128 dance (default 112)" },
+      { key: "energy", label: "Energy", type: "number", hint: "0.3 calm · 1 normal · 2 wild (default 1)" },
     ],
   },
 ];
@@ -189,10 +191,11 @@ export function fromForm(def: SectionDef, form: Record<string, string>): Doc {
   const doc: Doc = {};
   for (const f of def.fields) {
     const raw = form[f.key] ?? "";
-    const value =
-      f.type === "list"
-        ? raw.split("\n").map((s) => s.trim()).filter(Boolean)
-        : raw.trim();
+    let value: unknown;
+    if (f.type === "list") value = raw.split("\n").map((s) => s.trim()).filter(Boolean);
+    else if (f.type === "number") value = raw.trim() === "" ? undefined : Number(raw);
+    else value = raw.trim();
+    if (value === undefined) continue; // blank number: let the schema default apply
     setPath(doc, f.key, value);
   }
   return doc;

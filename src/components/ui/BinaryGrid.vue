@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useMusicState } from "../../composables/useMusicState";
+import { beatAt, useMusicState } from "../../composables/useMusicState";
 
 const props = withDefaults(
   defineProps<{
@@ -43,7 +43,6 @@ const PEAK_ALPHA = 1; // the sinking peak marker on top of each bar
 // instead: a beat envelope shaped like a mix (strong lows, tapering highs)
 // with per-column wobble, with a fast attack and gravity fall like CAVA.
 const music = useMusicState();
-const SYNTH_BPM = 112;
 let synthBars = new Float32Array(0);
 let synthPeaks = new Float32Array(0);
 let synthVel = new Float32Array(0);
@@ -58,18 +57,16 @@ function synthSample(out: Float32Array, now: number): boolean {
     synthPhase = Float32Array.from({ length: n }, () => Math.random() * Math.PI * 2);
   }
   const t = now / 1000;
-  const beatLen = 60 / SYNTH_BPM;
-  const beatPos = (t % beatLen) / beatLen; // 0 at the kick, 1 just before the next
-  const kick = Math.pow(1 - beatPos, 4); // sharp hit, fast decay
-  const bar4 = (t % (beatLen * 4)) / (beatLen * 4);
-  const snare = bar4 > 0.5 ? Math.pow(1 - (bar4 - 0.5) * 2, 6) : 0; // on beat 3
+  const { kick, snare, energy } = beatAt(now);
+  // Calm tracks keep the bars low and lazy; wild ones slam them up.
+  const gain = 0.6 + 0.4 * Math.min(energy, 2);
 
   for (let i = 0; i < n; i++) {
     const f = i / Math.max(n - 1, 1); // 0 = lows, 1 = highs
     const shape = 0.85 * (1 - f) * (1 - f) + 0.2; // mix-like spectral tilt
     const wobble = 0.5 + 0.5 * Math.sin(t * (1.7 + f * 2.3) + synthPhase[i]);
     const hit = kick * (1 - f * 0.6) + snare * (0.3 + f * 0.7);
-    const level = Math.min(1, shape * (0.18 + 0.32 * wobble + 0.6 * hit));
+    const level = Math.min(1, shape * gain * (0.18 + 0.32 * wobble + 0.6 * hit * energy));
 
     if (level >= synthBars[i]) {
       synthBars[i] = level;
@@ -126,7 +123,8 @@ function frame() {
   ctx.textBaseline = "middle";
 
   // Synthesise fresh bar heights while the music disc is playing.
-  const live = music.playing.value && synthSample(levels, performance.now());
+  const live =
+    music.playing.value && music.visualizer.value && synthSample(levels, performance.now());
 
   for (let r = 0; r < rows; r++) {
     // Rows counted from the bottom, so bars grow upward like CAVA.

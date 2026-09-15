@@ -54,6 +54,9 @@ const navigation = computed(() => {
 });
 
 const socials = computed(() => (isClient.value ? [] : data.value?.social ?? []));
+const profilePhotos = computed(() =>
+  (data.value?.photos ?? []).filter((p) => p.kind === "profile").map((p) => p.url),
+);
 const talkHref = computed(
   () =>
     socials.value.find((p) => p.network === "Telegram")?.url ||
@@ -158,6 +161,7 @@ const year = new Date().getFullYear();
             :talk-href="talkHref"
           />
           <Hero
+            :avatars="profilePhotos"
             :name="data.personal.name"
             :role="data.personal.label"
             :description="data.personal.summary"
