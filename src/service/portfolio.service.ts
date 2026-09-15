@@ -66,6 +66,12 @@ export interface Language {
   fluency: string;
 }
 
+/** A track for the hero music disc; `url` is any YouTube link or video ID. */
+export interface Music {
+  title: string;
+  url: string;
+}
+
 export interface Service {
   title: string;
   description: string;
@@ -83,6 +89,7 @@ export interface Portfolio {
   interests: Interests;
   languages: Language[];
   services: Service[];
+  music: Music[];
 }
 
 // In dev the Vite proxy forwards /api -> http://localhost:5000 (vite.config.ts).

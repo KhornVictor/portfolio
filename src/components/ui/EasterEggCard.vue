@@ -124,7 +124,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="fixed inset-0 z-100 grid place-items-center bg-ink/40 p-4 backdrop-blur-sm"
+    class="fixed inset-0 z-100 grid place-items-center bg-black/50 p-4 backdrop-blur-sm"
     role="dialog"
     aria-modal="true"
     aria-labelledby="egg-title"
@@ -155,7 +155,7 @@ onBeforeUnmount(() => {
             maxlength="6"
             :disabled="state === 'verifying'"
             :aria-label="`PIN digit ${i + 1}`"
-            class="pin-box h-12 w-10 rounded-xl border border-black/10 bg-white text-center font-mono text-xl outline-none transition focus:border-ink focus:ring-2 focus:ring-ink/15 disabled:opacity-50 sm:h-14 sm:w-11"
+            class="pin-box h-12 w-10 rounded-xl border border-ink/10 bg-surface text-center font-mono text-xl outline-none transition focus:border-ink focus:ring-2 focus:ring-ink/15 disabled:opacity-50 sm:h-14 sm:w-11"
             @input="onInput(i, $event)"
             @keydown="onKeydown(i, $event)"
             @focus="($event.target as HTMLInputElement).select()"

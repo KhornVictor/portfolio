@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useAudioLevels, type AudioSource } from "../../composables/useAudioLevels";
+import { useMusicState } from "../../composables/useMusicState";
 
 const props = withDefaults(
   defineProps<{
@@ -34,18 +34,56 @@ const MAX_ALPHA = 0.85;
 
 // CAVA-style spectrum: every column of the grid is one frequency bar that
 // rises from the bottom. `levels` holds the smoothed bar heights (0..1).
-const audio = useAudioLevels();
 let levels = new Float32Array(0);
 const BAR_ALPHA = 0.75; // brightness of cells inside a bar
 const PEAK_ALPHA = 1; // the sinking peak marker on top of each bar
 
-defineExpose({
-  startAudio: (source: AudioSource) => audio.start(source),
-  stopAudio: () => audio.stop(),
-  audioActive: audio.active,
-  audioSource: audio.source,
-  audioError: audio.error,
-});
+// The music disc plays through a YouTube iframe, whose audio is cross-origin
+// and can't be analysed. While it plays we synthesise a plausible spectrum
+// instead: a beat envelope shaped like a mix (strong lows, tapering highs)
+// with per-column wobble, with a fast attack and gravity fall like CAVA.
+const music = useMusicState();
+const SYNTH_BPM = 112;
+let synthBars = new Float32Array(0);
+let synthPeaks = new Float32Array(0);
+let synthVel = new Float32Array(0);
+let synthPhase = new Float32Array(0); // per-column wobble offset
+
+function synthSample(out: Float32Array, now: number): boolean {
+  const n = out.length;
+  if (synthBars.length !== n) {
+    synthBars = new Float32Array(n);
+    synthPeaks = new Float32Array(n);
+    synthVel = new Float32Array(n);
+    synthPhase = Float32Array.from({ length: n }, () => Math.random() * Math.PI * 2);
+  }
+  const t = now / 1000;
+  const beatLen = 60 / SYNTH_BPM;
+  const beatPos = (t % beatLen) / beatLen; // 0 at the kick, 1 just before the next
+  const kick = Math.pow(1 - beatPos, 4); // sharp hit, fast decay
+  const bar4 = (t % (beatLen * 4)) / (beatLen * 4);
+  const snare = bar4 > 0.5 ? Math.pow(1 - (bar4 - 0.5) * 2, 6) : 0; // on beat 3
+
+  for (let i = 0; i < n; i++) {
+    const f = i / Math.max(n - 1, 1); // 0 = lows, 1 = highs
+    const shape = 0.85 * (1 - f) * (1 - f) + 0.2; // mix-like spectral tilt
+    const wobble = 0.5 + 0.5 * Math.sin(t * (1.7 + f * 2.3) + synthPhase[i]);
+    const hit = kick * (1 - f * 0.6) + snare * (0.3 + f * 0.7);
+    const level = Math.min(1, shape * (0.18 + 0.32 * wobble + 0.6 * hit));
+
+    if (level >= synthBars[i]) {
+      synthBars[i] = level;
+      synthVel[i] = 0;
+    } else {
+      synthVel[i] += 0.06;
+      synthBars[i] = Math.max(level, synthBars[i] - synthVel[i] * 0.1);
+    }
+    synthPeaks[i] =
+      synthBars[i] >= synthPeaks[i] ? synthBars[i] : Math.max(synthBars[i], synthPeaks[i] - 0.015);
+    out[i] = synthBars[i];
+  }
+  return true;
+}
 
 function resize() {
   const el = canvas.value;
@@ -87,8 +125,8 @@ function frame() {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // Pull fresh bar heights from the analyser (no-op when audio is off).
-  const music = audio.sample(levels);
+  // Synthesise fresh bar heights while the music disc is playing.
+  const live = music.playing.value && synthSample(levels, performance.now());
 
   for (let r = 0; r < rows; r++) {
     // Rows counted from the bottom, so bars grow upward like CAVA.
@@ -120,9 +158,9 @@ function frame() {
       // Spectrum bar for this column: cells below the bar height light up,
       // the topmost lit cell (or the held peak) glows brightest.
       let bar = 0;
-      if (music) {
+      if (live) {
         const height = levels[c] * rows;
-        const peakRow = Math.round(audio.peakOf(c) * rows);
+        const peakRow = Math.round(synthPeaks[c] * rows);
         if (fromBottom < height) {
           // Brighter toward the top of the bar.
           bar = BAR_ALPHA * (0.45 + 0.55 * (fromBottom / Math.max(height, 1)));
@@ -217,7 +255,6 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(raf);
-  audio.stop();
   ro?.disconnect();
   window.removeEventListener("pointermove", onMove);
   window.removeEventListener("pointerleave", onLeave);

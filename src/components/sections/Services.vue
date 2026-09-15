@@ -20,11 +20,11 @@ function toggle(i: number) {
     <div
       v-for="(service, i) in services"
       :key="service.title"
-      class="border-t border-black/10 last:border-b"
+      class="border-t border-ink/10 last:border-b"
     >
       <div
         class="my-2 overflow-hidden rounded-2xl transition-colors duration-300"
-        :class="openIndex === i ? 'bg-ink text-white' : 'bg-transparent'"
+        :class="openIndex === i ? 'bg-ink text-paper' : 'bg-transparent'"
       >
         <button
           type="button"
@@ -34,7 +34,7 @@ function toggle(i: number) {
         >
           <span
             class="display text-[clamp(1.4rem,4.5vw,2.1rem)]"
-            :class="openIndex === i ? 'text-white' : 'text-ink'"
+            :class="openIndex === i ? 'text-paper' : 'text-ink'"
           >
             {{ service.title }}
           </span>
@@ -42,7 +42,7 @@ function toggle(i: number) {
             class="grid h-9 w-9 flex-none place-items-center rounded-full transition-transform duration-300"
             :class="
               openIndex === i
-                ? 'rotate-90 bg-white/10 text-white'
+                ? 'rotate-90 bg-paper/10 text-paper'
                 : 'text-ink/70'
             "
           >
@@ -53,14 +53,14 @@ function toggle(i: number) {
         <div class="acc-body" :class="{ open: openIndex === i }">
           <div class="acc-inner">
             <div class="px-4 pb-7 sm:px-6">
-              <p class="max-w-2xl text-sm leading-relaxed text-white/70">
+              <p class="max-w-2xl text-sm leading-relaxed text-paper/70">
                 {{ service.description }}
               </p>
               <div class="mt-4 flex flex-wrap gap-2">
                 <span
                   v-for="tag in service.tags"
                   :key="tag"
-                  class="rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80"
+                  class="rounded-full border border-paper/15 bg-paper/5 px-3 py-1 text-xs text-paper/80"
                   >{{ tag }}</span
                 >
               </div>

@@ -3,6 +3,9 @@ import { computed, onMounted, ref } from "vue";
 import { loadPortfolio, type Portfolio } from "../../service/portfolio.service";
 import SiteHeader from "./SiteHeader.vue";
 import Hero from "../sections/Hero.vue";
+import MusicDisc from "../ui/MusicDisc.vue";
+import SocialDock from "../ui/SocialDock.vue";
+import SocialMediaCarousel from "../sections/socialMediaCarousel.vue";
 import SelectedWork from "../sections/SelectedWork.vue";
 import Services from "../sections/Services.vue";
 import Experience from "../sections/Experience.vue";
@@ -146,7 +149,7 @@ const year = new Date().getFullYear();
         <!-- Hero -->
         <section
           id="home"
-          class="panel flex flex-col overflow-hidden pb-2 h-screen"
+          class="panel relative flex flex-col overflow-hidden pb-2 h-screen"
         >
           <SiteHeader
             :navigation="navigation"
@@ -157,10 +160,25 @@ const year = new Date().getFullYear();
             :name="data.personal.name"
             :role="data.personal.label"
             :description="data.personal.summary"
-            :email="data.personal.email"
-            :socials="socials"
             collaborate-href="#contact"
           />
+
+          <!-- Music disc: plays the tracks saved in the portfolio -->
+          <div
+            v-if="data.music?.length"
+            class="absolute bottom-5 right-5 z-40"
+          >
+            <MusicDisc :tracks="data.music" :size="60" />
+          </div>
+        </section>
+
+        <!-- Social media marquee -->
+        <section
+          v-if="socials.length"
+          class="panel relative z-10"
+          aria-label="Social media"
+        >
+          <SocialMediaCarousel :socials="socials" :email="data.personal.email" />
         </section>
 
         <section
@@ -202,6 +220,9 @@ const year = new Date().getFullYear();
             :phone="isClient ? undefined : data.personal.phone"
           />
         </section>
+
+        <!-- macOS-style social dock: slides in from the right edge on hover -->
+        <SocialDock :socials="socials" :email="data.personal.email" />
 
         <!-- Footer -->
         <footer

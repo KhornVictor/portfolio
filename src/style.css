@@ -1,17 +1,63 @@
 @import "tailwindcss";
 
+/* Class-based dark mode: `dark:` utilities apply under <html class="dark">. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     sans-serif;
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-ink: #0d0d0f;
+  /* Semantic palette (light). Every colour on the portfolio pages derives
+     from these so the dark theme below only has to swap the tokens. */
+  --color-ink: #0d0d0f; /* text + strong fills */
+  --color-paper: #fbfbfc; /* panel background */
+  --color-surface: #ffffff; /* cards, pills, buttons that sit on a panel */
   --color-panel: #f4f4f5;
   --color-panel-dark: #131315;
 }
 
 :root {
   color-scheme: light;
+  /* Sky backdrop behind the panels */
+  --sky-base: #c2c5c8;
+  --sky-hi: 255, 255, 255;
+  --sky-lo: 150, 156, 161;
+  --sky-lo2: 168, 173, 178;
+  --sky-top: #cfd2d5;
+  --sky-mid: #b9bdc1;
+  --sky-bottom: #aeb2b6;
+  --panel-soft-top: #f6f6f7;
+  --panel-soft-bottom: #efeff1;
+  --panel-edge: rgba(255, 255, 255, 0.7);
+  --shadow-ink: 20, 22, 26;
+}
+
+.dark {
+  color-scheme: dark;
+  --color-ink: #f2f2f4;
+  --color-paper: #141417;
+  --color-surface: #1d1d21;
+  --sky-base: #0b0b0d;
+  --sky-hi: 60, 62, 70;
+  --sky-lo: 0, 0, 0;
+  --sky-lo2: 0, 0, 0;
+  --sky-top: #1a1a1e;
+  --sky-mid: #0f0f12;
+  --sky-bottom: #08080a;
+  --panel-soft-top: #17171b;
+  --panel-soft-bottom: #111114;
+  --panel-edge: rgba(255, 255, 255, 0.06);
+  --shadow-ink: 0, 0, 0;
+}
+
+/* Soften the switch between themes (class is added briefly by useTheme). */
+html.theme-transition,
+html.theme-transition * {
+  transition:
+    background-color 0.35s ease,
+    border-color 0.35s ease,
+    color 0.35s ease !important;
 }
 
 html {
@@ -40,44 +86,45 @@ body {
   color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* Atmospheric grayscale "sky" backdrop, generated with layered gradients. */
-  background-color: #c2c5c8;
+  /* Atmospheric grayscale "sky" backdrop, generated with layered gradients
+     (colours come from the theme tokens in :root / .dark). */
+  background-color: var(--sky-base);
   background-image: radial-gradient(
       120% 80% at 15% 8%,
-      rgba(255, 255, 255, 0.75) 0%,
-      rgba(255, 255, 255, 0) 45%
+      rgba(var(--sky-hi), 0.75) 0%,
+      rgba(var(--sky-hi), 0) 45%
     ),
     radial-gradient(
       90% 70% at 85% 12%,
-      rgba(255, 255, 255, 0.55) 0%,
-      rgba(255, 255, 255, 0) 40%
+      rgba(var(--sky-hi), 0.55) 0%,
+      rgba(var(--sky-hi), 0) 40%
     ),
     radial-gradient(
       130% 90% at 78% 92%,
-      rgba(150, 156, 161, 0.55) 0%,
-      rgba(150, 156, 161, 0) 50%
+      rgba(var(--sky-lo), 0.55) 0%,
+      rgba(var(--sky-lo), 0) 50%
     ),
     radial-gradient(
       100% 80% at 10% 95%,
-      rgba(168, 173, 178, 0.5) 0%,
-      rgba(168, 173, 178, 0) 55%
+      rgba(var(--sky-lo2), 0.5) 0%,
+      rgba(var(--sky-lo2), 0) 55%
     ),
-    linear-gradient(180deg, #cfd2d5 0%, #b9bdc1 55%, #aeb2b6 100%);
+    linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 55%, var(--sky-bottom) 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
 
 /* ---------- Reusable surfaces ---------- */
 .panel {
-  background: #fbfbfc;
-  box-shadow: 0 30px 80px -30px rgba(20, 22, 26, 0.45),
-    0 2px 6px rgba(20, 22, 26, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: var(--color-paper);
+  box-shadow: 0 30px 80px -30px rgba(var(--shadow-ink), 0.45),
+    0 2px 6px rgba(var(--shadow-ink), 0.06), inset 0 1px 0 var(--panel-edge);
 }
 
 .panel-soft {
-  background: linear-gradient(180deg, #f6f6f7 0%, #efeff1 100%);
-  box-shadow: 0 30px 80px -30px rgba(20, 22, 26, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, var(--panel-soft-top) 0%, var(--panel-soft-bottom) 100%);
+  box-shadow: 0 30px 80px -30px rgba(var(--shadow-ink), 0.45),
+    inset 0 1px 0 var(--panel-edge);
 }
 
 .panel-dark {
@@ -92,12 +139,11 @@ body {
   align-items: center;
   gap: 0.5rem;
   border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid rgba(15, 15, 17, 0.08);
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
   padding: 0.5rem 0.9rem;
   font-size: 0.82rem;
   font-weight: 500;
-  box-shadow: 0 6px 16px -8px rgba(20, 22, 26, 0.35);
 }
 
 .btn {
@@ -118,16 +164,16 @@ body {
 }
 .btn-dark {
   background: var(--color-ink);
-  color: #fff;
-  box-shadow: 0 16px 30px -12px rgba(13, 13, 15, 0.6);
+  color: var(--color-paper);
+  box-shadow: 0 16px 30px -12px rgba(var(--shadow-ink), 0.6);
 }
 .btn-dark:hover {
-  box-shadow: 0 22px 40px -14px rgba(13, 13, 15, 0.7);
+  box-shadow: 0 22px 40px -14px rgba(var(--shadow-ink), 0.7);
 }
 .btn-light {
-  background: #fff;
+  background: var(--color-surface);
   color: var(--color-ink);
-  border: 1px solid rgba(15, 15, 17, 0.12);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 12%, transparent);
 }
 
 /* ---------- Display type ---------- */
@@ -142,7 +188,7 @@ body {
 /* Outlined variant of the giant name */
 .text-outline {
   color: transparent;
-  -webkit-text-stroke: 1.5px rgba(13, 13, 15, 0.85);
+  -webkit-text-stroke: 1.5px color-mix(in srgb, var(--color-ink) 85%, transparent);
 }
 @media (max-width: 640px) {
   .text-outline {
@@ -157,7 +203,7 @@ body {
   text-transform: uppercase;
   letter-spacing: -0.03em;
   line-height: 1;
-  color: rgba(13, 13, 15, 0.045);
+  color: color-mix(in srgb, var(--color-ink) 4.5%, transparent);
   pointer-events: none;
   -webkit-user-select: none;
   user-select: none;

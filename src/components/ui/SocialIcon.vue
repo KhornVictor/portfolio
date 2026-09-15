@@ -1,69 +1,49 @@
 <script setup lang="ts">
-// Minimal brand/utility glyphs, keyed by lowercased network name.
-defineProps<{ name: string; size?: number }>();
+// Font Awesome glyph for a social network, keyed by (case-insensitive) name.
+// The kit is loaded in index.html; brand icons come from the `fa-brands` set.
+import { computed } from "vue";
+
+const props = withDefaults(defineProps<{ name: string; size?: number }>(), {
+  size: 18,
+});
+
+const ICONS: [RegExp, string][] = [
+  [/github/i, "fa-brands fa-github"],
+  [/linkedin/i, "fa-brands fa-linkedin-in"],
+  [/facebook/i, "fa-brands fa-facebook-f"],
+  [/instagram/i, "fa-brands fa-instagram"],
+  [/telegram/i, "fa-brands fa-telegram"],
+  [/twitter/i, "fa-brands fa-twitter"],
+  [/^x$/i, "fa-brands fa-x-twitter"],
+  [/youtube/i, "fa-brands fa-youtube"],
+  [/tiktok/i, "fa-brands fa-tiktok"],
+  [/discord/i, "fa-brands fa-discord"],
+  [/whatsapp/i, "fa-brands fa-whatsapp"],
+  [/threads/i, "fa-brands fa-threads"],
+  [/reddit/i, "fa-brands fa-reddit-alien"],
+  [/medium/i, "fa-brands fa-medium"],
+  [/dev\.to|devto/i, "fa-brands fa-dev"],
+  [/stack ?overflow/i, "fa-brands fa-stack-overflow"],
+  [/gitlab/i, "fa-brands fa-gitlab"],
+  [/dribbble/i, "fa-brands fa-dribbble"],
+  [/behance/i, "fa-brands fa-behance"],
+  [/mail|email/i, "fa-solid fa-envelope"],
+  [/mac|apple/i, "fa-brands fa-apple"],
+  [/terminal|console/i, "fa-solid fa-terminal"],
+];
+
+const iconClass = computed(
+  () =>
+    ICONS.find(([re]) => re.test(props.name.trim()))?.[1] ??
+    "fa-solid fa-globe", // fallback: website
+);
 </script>
 
 <template>
-  <svg
-    :width="size ?? 18"
-    :height="size ?? 18"
-    viewBox="0 0 24 24"
+  <i
+    :class="iconClass"
+    :style="{ fontSize: size + 'px', width: size + 'px', height: size + 'px' }"
+    class="inline-flex items-center justify-center leading-none"
     aria-hidden="true"
-    fill="currentColor"
-  >
-    <!-- GitHub -->
-    <path
-      v-if="/github/i.test(name)"
-      d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.36-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 2.5-.34c.85 0 1.71.12 2.5.34 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.93-2.35 4.79-4.58 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.03 10.03 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"
-    />
-    <!-- LinkedIn -->
-    <path
-      v-else-if="/linkedin/i.test(name)"
-      d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.53C0 23.22.79 24 1.77 24h20.45c.98 0 1.78-.78 1.78-1.74V1.73C24 .77 23.2 0 22.22 0Z"
-    />
-    <!-- Facebook -->
-    <path
-      v-else-if="/facebook/i.test(name)"
-      d="M22 12.07C22 6.51 17.52 2 12 2S2 6.51 2 12.07c0 5.02 3.66 9.18 8.44 9.93v-7.03H7.9v-2.9h2.54V9.84c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.46h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.78l-.44 2.9h-2.34V22C18.34 21.25 22 17.09 22 12.07Z"
-    />
-    <path
-      v-else-if="/mail|email/i.test(name)"
-      d="M2 5.5A2.5 2.5 0 0 1 4.5 3h15A2.5 2.5 0 0 1 22 5.5v13a2.5 2.5 0 0 1-2.5 2.5h-15A2.5 2.5 0 0 1 2 18.5v-13Zm2.3.5 7.7 5.35L19.7 6H4.3ZM20 7.4l-7.43 5.17a1 1 0 0 1-1.14 0L4 7.4v11.1c0 .28.22.5.5.5h15a.5.5 0 0 0 .5-.5V7.4Z"
-    />
-    <!-- Twitter -->
-    <path
-      v-else-if="/twitter/i.test(name)"
-      d="M22 5.92c-.77.35-1.6.58-2.47.69a4.29 4.29 0 0 0 1.88-2.37 8.48 8.48 0 0 1-2.72 1.05 4.25 4.25 0 0 0-7.24 3.87A12.07 12.07 0 0 1 3.1 4.9a4.24 4.24 0 0 0 1.31 5.67 4.18 4.18 0 0 1-1.92-.53v.05a4.26 4.26 0 0 0 3.41 4.17 4.3 4.3 0 0 1-1.91.07 4.26 4.26 0 0 0 3.98 2.96A8.54 8.54 0 0 1 2 19.54 12.05 12.05 0 0 0 8.52 21.5c7.82 0 12.1-6.57 12.1-12.27v-.56c.83-.61 1.55-1.37 2.12-2.25Z"
-    />
-    <!-- X -->
-    <path
-      v-else-if="/twitter|x/i.test(name)"
-      d="M18.9 2H22l-6.78 7.75L23 22h-6.16l-4.82-6.3L6.5 22H3.4l7.24-8.28L1 2h6.3l4.36 5.77L18.9 2Zm-1.08 18h1.71L5.24 3.9H3.42L17.82 20Z"
-    />
-    <!-- Instagram -->
-    <path
-      v-else-if="/instagram/i.test(name)"
-      d="M7 2C4.24 2 2 4.24 2 7v10c0 2.76 2.24 5 5 5h10c2.76 0 5-2.24 5-5V7c0-2.76-2.24-5-5-5H7Zm0 2h10c1.65 0 3 1.35 3 3v10c0 1.65-1.35 3-3 3H7c-1.65 0-3-1.35-3-3V7c0-1.65 1.35-3 3-3Zm10.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3ZM12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"
-    />
-    <!-- Telegram -->
-    <path
-      v-else-if="/telegram/i.test(name)"
-      d="M21.5 2.5a1.5 1.5 0 0 0-1.5 1.5v17a1.5 1.5 0 0 0 3 0V4a1.5 1.5 0 0 0-1.5-1.5ZM12 6a1 1 0 0 0-1 1v8a1 1 0 0 0 2 0V7a1 1 0 0 0-1-1Zm4.5 4a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v4a1 1 0 0 0 2 0V11h6.5a1 1 0 0 0 1-1Z"
-    />
-    <!-- macOS / Apple -->
-    <path
-      v-else-if="/mac|apple/i.test(name)"
-      d="M16.4 12.6c0-2.4 2-3.6 2.1-3.7-1.1-1.7-2.9-1.9-3.5-1.9-1.5-.2-2.9.9-3.7.9-.8 0-1.9-.9-3.2-.8-1.6 0-3.1 1-4 2.4-1.7 3-.4 7.3 1.2 9.7.8 1.2 1.8 2.5 3 2.4 1.2 0 1.7-.8 3.2-.8s1.9.8 3.2.8c1.3 0 2.2-1.2 3-2.4.9-1.4 1.3-2.7 1.3-2.8 0 0-2.6-1-2.6-3.8zM14 5.4c.7-.8 1.1-1.9 1-3-1 0-2.1.7-2.8 1.5-.6.7-1.2 1.9-1 2.9 1.1.1 2.2-.5 2.8-1.4z"
-    />
-    <!-- Terminal / console -->
-    <path
-      v-else-if="/terminal|console/i.test(name)"
-      d="M17 15H12M7 10L10 12.5L7 15M3 15.8002V8.2002C3 7.08009 3 6.51962 3.21799 6.0918C3.40973 5.71547 3.71547 5.40973 4.0918 5.21799C4.51962 5 5.08009 5 6.2002 5H17.8002C18.9203 5 19.4796 5 19.9074 5.21799C20.2837 5.40973 20.5905 5.71547 20.7822 6.0918C21 6.5192 21 7.07899 21 8.19691V15.8031C21 16.921 21 17.48 20.7822 17.9074C20.5905 18.2837 20.2837 18.5905 19.9074 18.7822C19.48 19 18.921 19 17.8031 19H6.19691C5.07899 19 4.5192 19 4.0918 18.7822C3.71547 18.5905 3.40973 18.2837 3.21799 17.9074C3 17.4796 3 16.9203 3 15.8002Z"
-    />
-    <!-- Fallback: globe / website -->
-    <path
-      v-else
-      d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.9 6h-2.6a15.3 15.3 0 0 0-1.1-3.3A8 8 0 0 1 18.9 8ZM12 4c.8 1 1.5 2.4 1.9 4h-3.8c.4-1.6 1.1-3 1.9-4ZM4.3 14a8 8 0 0 1 0-4h3a17.6 17.6 0 0 0 0 4h-3Zm.8 2h2.6c.3 1.2.7 2.3 1.1 3.3A8 8 0 0 1 5.1 16ZM7.7 8H5.1a8 8 0 0 1 3.7-3.3C8.4 5.7 8 6.8 7.7 8ZM12 20c-.8-1-1.5-2.4-1.9-4h3.8c-.4 1.6-1.1 3-1.9 4Zm2.3-6H9.7a15.6 15.6 0 0 1 0-4h4.6a15.6 15.6 0 0 1 0 4Zm.6 5.3c.4-1 .8-2.1 1.1-3.3h2.6a8 8 0 0 1-3.7 3.3ZM16.7 14a17.6 17.6 0 0 0 0-4h3a8 8 0 0 1 0 4h-3Z"
-    />
-  </svg>
+  ></i>
 </template>

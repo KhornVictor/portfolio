@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
-import SocialIcon from "../ui/SocialIcon.vue";
 import BinaryGrid from "../ui/BinaryGrid.vue";
 import EasterEggCard from "../ui/EasterEggCard.vue";
 import { imageUrl } from "../../config/assets";
-import type { AudioSource } from "../../composables/useAudioLevels";
+import { useTheme } from "../../composables/useTheme";
+
+const { isDark } = useTheme();
+// BinaryGrid takes an "r, g, b" triple; match the current ink colour.
+const gridColor = computed(() => (isDark.value ? "242, 242, 244" : "13, 13, 15"));
 
 const props = defineProps<{
   name: string;
   role: string;
   description: string;
-  email: string;
-  socials: { network: string; url: string }[];
   collaborateHref: string;
 }>();
 
@@ -62,9 +63,6 @@ onBeforeUnmount(() => {
   if (timer) clearInterval(timer);
 });
 
-// Mouse parallax: the portrait drifts and tilts toward the cursor while it is
-// over the hero, then eases back to center. Driven through CSS variables on
-// the frame so it composes with the glitch animation on the <img>.
 const PARALLAX_SHIFT = 18; // px of travel at the hero's edge
 const PARALLAX_TILT = 6; // deg of rotation at the hero's edge
 const root = ref<HTMLElement | null>(null);
@@ -143,28 +141,6 @@ onBeforeUnmount(() => {
   if (idleTimer) clearTimeout(idleTimer);
 });
 
-// Audio-reactive background (CAVA-style bars in the binary grid). Needs a
-// click: browsers only hand out system/mic audio after a permission prompt.
-const grid = ref<InstanceType<typeof BinaryGrid> | null>(null);
-const audioBusy = ref(false);
-const audioError = ref("");
-const audioOn = computed(() => grid.value?.audioActive ?? false);
-
-async function toggleAudio(source: AudioSource = "system") {
-  const g = grid.value;
-  if (!g || audioBusy.value) return;
-  audioError.value = "";
-  if (g.audioActive) return g.stopAudio();
-  audioBusy.value = true;
-  try {
-    await g.startAudio(source);
-  } catch (e) {
-    audioError.value = e instanceof Error ? e.message : String(e);
-  } finally {
-    audioBusy.value = false;
-  }
-}
-
 const nameParts = computed(() => {
   const bits = props.name.trim().split(/\s+/);
   return { first: bits[0] ?? "", rest: bits.slice(1).join(" ") };
@@ -175,11 +151,6 @@ const firstLetters = computed(() => [...nameParts.value.first]);
 const restLetters = computed(() =>
   nameParts.value.rest ? [...(" " + nameParts.value.rest)] : [],
 );
-
-const socials = computed(() => [
-  ...props.socials.map((p) => ({ label: p.network, url: p.url })),
-  { label: "Email", url: `mailto:${props.email}` },
-]);
 </script>
 
 <template>
@@ -190,25 +161,7 @@ const socials = computed(() => [
     @pointerleave="onPointerLeave"
   >
     <!-- Binary grid background -->
-    <BinaryGrid ref="grid" class="pointer-events-none absolute inset-0 z-0" />
-
-    <!-- Music visualizer toggle: left click = system/tab audio, right click = microphone -->
-    <div class="absolute right-4 top-4 z-40 flex flex-col items-end gap-1 sm:right-7 sm:top-6">
-      <button
-        type="button"
-        class="pill audio-toggle transition hover:-translate-y-0.5 hover:shadow-md"
-        :class="{ 'is-on': audioOn }"
-        :disabled="audioBusy"
-        :aria-pressed="audioOn"
-        :title="audioOn ? 'Stop visualizer' : 'Visualize what is playing (right-click for microphone)'"
-        @click="toggleAudio('system')"
-        @contextmenu.prevent="toggleAudio('mic')"
-      >
-        <i class="fa-solid fa-music"></i>
-        <span class="text-xs">{{ audioOn ? "Listening…" : audioBusy ? "…" : "Visualize" }}</span>
-      </button>
-      <span v-if="audioError" class="max-w-60 text-right text-xs text-red-600">{{ audioError }}</span>
-    </div>
+    <BinaryGrid :color="gridColor" class="pointer-events-none absolute inset-0 z-0" />
 
     <!-- Giant name -->
     <h1
@@ -251,45 +204,44 @@ const socials = computed(() => [
         />
         <!-- soft fade so the photo melts into the panel -->
         <div
-          class="pointer-events-none absolute inset-x-0 bottom-0 w-full z-20 h-24 bg-linear-to-t from-[#fbfbfc] to-transparent"
+          class="pointer-events-none absolute inset-x-0 bottom-0 w-full z-20 h-24 bg-linear-to-t from-paper to-transparent"
         ></div>
       </div>
     </div>
 
     <EasterEggCard v-if="eggOpen" @close="eggOpen = false" />
 
-    <!-- Prev / next avatar arrows. Each sits in an invisible hover zone on the
-         left/right edge; the arrow only fades in while the cursor is inside that zone. -->
-    <template v-if="avatars.length > 1">
-      <div class="avatar-arrow-zone left-0 justify-start pl-3 sm:pl-6 lg:pl-10">
-        <button
-          type="button"
-          class="avatar-arrow hover:scale-125 duration-300 active:scale-110"
-          aria-label="Previous profile"
-          @click="onArrow(-1)"
-        >
-          <i class="fa-solid fa-caret-left"></i>
-        </button>
-      </div>
-      <div class="avatar-arrow-zone right-0 justify-end pr-3 sm:pr-6 lg:pr-10">
-        <button
-          type="button"
-          class="avatar-arrow hover:scale-125 duration-300 active:scale-110" 
-          aria-label="Next profile"
-          @click="onArrow(1)"
-        >
-          <i class="fa-solid fa-caret-right"></i>
-        </button>
-      </div>
-    </template>
+    <!-- Prev / next avatar arrows, bottom-center. They sit in an invisible hover
+         zone and only rise into view while the cursor is inside it. -->
+    <div v-if="avatars.length > 1" class="avatar-arrow-zone">
+      <button
+        type="button"
+        class="avatar-arrow"
+        aria-label="Previous profile"
+        @click="onArrow(-1)"
+      >
+        <i class="fa-solid fa-caret-left"></i>
+      </button>
+      <span class="avatar-count" aria-live="polite">
+        {{ index + 1 }} / {{ avatars.length }}
+      </span>
+      <button
+        type="button"
+        class="avatar-arrow"
+        aria-label="Next profile"
+        @click="onArrow(1)"
+      >
+        <i class="fa-solid fa-caret-right"></i>
+      </button>
+    </div>
 
-    <!-- Overlay: role/description (left) + socials (right) -->
+    <!-- Overlay: role/description card -->
     <div
       class="relative z-30 mt-2 flex flex-col items-stretch justify-between gap-6 sm:gap-8 md:absolute md:inset-x-8 md:bottom-1 md:mt-0 md:flex-row md:items-end lg:inset-x-12 lg:bottom-12"
     >
       <!-- Between sm and xl only the button shows; hovering/focusing the card expands the full content. -->
       <div
-        class="group max-w-full md:max-w-sm lg:max-w-md rounded-2xl transition-[background-color,padding,box-shadow] hover:bg-[#fbfbfc] xl:bg-[#fbfbfc] hover:p-5 duration-300 border-0 xl:p-10 hover:shadow-2xl xl:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-hover:bg-[#fbfbfc] sm:max-xl:group-hover:p-10 sm:max-xl:group-hover:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-focus-within:bg-[#fbfbfc] sm:max-xl:group-focus-within:p-10 sm:max-xl:group-focus-within:shadow-[0px_0px_100px_rgba(0,0,0,0.1)]"
+        class="group max-w-full md:max-w-sm lg:max-w-md rounded-2xl transition-[background-color,padding,box-shadow] hover:bg-paper xl:bg-paper hover:p-5 duration-300 border-0 xl:p-10 hover:shadow-2xl xl:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-hover:bg-paper sm:max-xl:group-hover:p-10 sm:max-xl:group-hover:shadow-[0px_0px_100px_rgba(0,0,0,0.1)] sm:max-xl:group-focus-within:bg-paper sm:max-xl:group-focus-within:p-10 sm:max-xl:group-focus-within:shadow-[0px_0px_100px_rgba(0,0,0,0.1)]"
       >
         <div
           class="grid grid-rows-[1fr] transition-[grid-template-rows,opacity] duration-300 ease-out sm:max-xl:grid-rows-[0fr] sm:max-xl:opacity-0 sm:max-xl:group-hover:grid-rows-[1fr] sm:max-xl:group-hover:opacity-100 sm:max-xl:group-focus-within:grid-rows-[1fr] sm:max-xl:group-focus-within:opacity-100"
@@ -314,22 +266,6 @@ const socials = computed(() => [
         </a>
       </div>
 
-      <div
-        class="md:flex flex-wrap gap-2.5 md:flex-col md:items-end hidden"
-        aria-label="Social links"
-      >
-        <a
-          v-for="s in socials"
-          :key="s.label"
-          class="pill social-icon duration-300 transition hover:-translate-y-0.5 hover:shadow-md"
-          :href="s.url"
-          :target="/^(mailto:|\/)/.test(s.url) ? undefined : '_blank'"
-          rel="noreferrer"
-        >
-          <SocialIcon :name="s.label" :size="16" />
-          <span class="description duration-300">{{ s.label }}</span>
-        </a>
-      </div>
     </div>
   </div>
 </template>
@@ -362,16 +298,6 @@ const socials = computed(() => [
   }
 }
 
-.description {
-  display: none;
-  animation: pop-in 0.3s ease-in-out;
-  transition: all 0.3s ease-in-out;
-}
-
-.social-icon:hover .description {
-  display: inline;
-}
-
 /* Slide + shrink the portrait on name hover to reveal the full name */
 .avatar {
   transition: transform 0.4s ease-in-out;
@@ -388,28 +314,40 @@ const socials = computed(() => [
   }
 }
 
-@keyframes pop-in {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+/* Prev / next avatar arrows */
+/* Invisible hover zone: a strip along the bottom edge, centered horizontally. */
+.avatar-arrow-zone {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.75rem;
+  width: clamp(12rem, 30vw, 20rem);
+  height: clamp(5rem, 14vh, 8rem);
+  padding-bottom: 1rem;
+  transform: translateX(-50%);
+}
+
+@media (min-width: 640px) {
+  .avatar-arrow-zone {
+    padding-bottom: 1.5rem;
   }
 }
 
-/* Prev / next avatar arrows */
-/* Invisible hover zone: a vertical strip on each edge, centered on the page. */
-.avatar-arrow-zone {
-  position: absolute;
-  top: 50%;
-  z-index: 40;
-  display: flex;
-  align-items: center;
-  width: clamp(5rem, 12vw, 9rem);
-  height: 40%;
-  transform: translateY(-50%);
+/* Counter between the arrows, revealed together with them. */
+.avatar-count {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--color-ink) 50%, transparent);
+  opacity: 0;
+  transform: translateY(1rem);
+  transition:
+    opacity 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .avatar-arrow {
@@ -420,13 +358,12 @@ const socials = computed(() => [
   height: 2.75rem;
   opacity: 0;
   pointer-events: none;
-  /* Hidden state: pushed off toward its own edge; --slide-from is set per side below. */
-  --slide-from: -1.5rem;
-  transform: translateX(var(--slide-from));
+  /* Hidden state: tucked down below the edge; rises into place on hover. */
+  transform: translateY(1rem);
   border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid rgba(15, 15, 17, 0.08);
-  box-shadow: 0 6px 16px -8px rgba(20, 22, 26, 0.35);
+  background: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-ink) 8%, transparent);
+  box-shadow: 0 6px 16px -8px rgba(var(--shadow-ink), 0.35);
   color: var(--color-ink);
   font-family: inherit;
   font-size: 1.25rem;
@@ -440,30 +377,30 @@ const socials = computed(() => [
     opacity 0.25s ease;
 }
 
-.avatar-arrow-zone.right-0 .avatar-arrow {
-  --slide-from: 1.5rem;
-}
-
-/* Reveal only while the cursor is inside the zone (or the button is keyboard-focused):
-   slide in from the edge while fading in. */
+/* Reveal only while the cursor is inside the zone (or a button is keyboard-focused):
+   rise from the bottom edge while fading in. */
 .avatar-arrow-zone:hover .avatar-arrow,
-.avatar-arrow:focus-visible {
+.avatar-arrow-zone:focus-within .avatar-arrow,
+.avatar-arrow-zone:hover .avatar-count,
+.avatar-arrow-zone:focus-within .avatar-count {
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(0);
+  transform: translateY(0);
 }
 
 /* No hover on touch devices: keep the arrows always visible there. */
 @media (hover: none) {
-  .avatar-arrow {
+  .avatar-arrow,
+  .avatar-count {
     opacity: 1;
     pointer-events: auto;
-    transform: translateX(0);
+    transform: none;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .avatar-arrow {
+  .avatar-arrow,
+  .avatar-count {
     transition: opacity 0.2s ease;
     transform: none;
   }
@@ -471,7 +408,7 @@ const socials = computed(() => [
 
 .avatar-arrow:hover {
   transform: scale(1.08);
-  box-shadow: 0 12px 24px -10px rgba(20, 22, 26, 0.45);
+  box-shadow: 0 12px 24px -10px rgba(var(--shadow-ink), 0.45);
 }
 
 .avatar-arrow:active {
@@ -493,27 +430,6 @@ const socials = computed(() => [
     rotateX(var(--rx)) rotateY(var(--ry));
   transform-style: preserve-3d;
   will-change: transform;
-}
-
-/* Visualizer toggle: pulse while listening */
-.audio-toggle.is-on {
-  animation: audio-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes audio-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(15, 15, 17, 0.25);
-  }
-  50% {
-    box-shadow: 0 0 0 6px rgba(15, 15, 17, 0);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .audio-toggle.is-on {
-    animation: none;
-  }
 }
 
 /* TikTok-style glitch transition between avatars */

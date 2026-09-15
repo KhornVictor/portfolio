@@ -145,6 +145,16 @@ export const SECTIONS: SectionDef[] = [
       { key: "tags", label: "Tags", type: "list" },
     ],
   },
+  {
+    name: "music",
+    label: "Music",
+    single: false,
+    titleKey: "title",
+    fields: [
+      { key: "title", label: "Title", type: "text", required: true },
+      { key: "url", label: "YouTube URL", type: "text", required: true, hint: "watch, youtu.be, embed or shorts link" },
+    ],
+  },
 ];
 
 // ---- dot-path helpers used by the form ----

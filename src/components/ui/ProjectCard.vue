@@ -40,7 +40,7 @@ const initials = computed(() =>
   >
     <!-- Cover -->
     <div
-      class="relative aspect-4/3 overflow-hidden rounded-2xl border border-black/5"
+      class="relative aspect-4/3 overflow-hidden rounded-2xl border border-ink/5"
       :style="{
         background: `radial-gradient(120% 120% at 15% 0%, rgba(${accent},0.28), rgba(0,0,0,0) 55%), linear-gradient(160deg,#1a1a1e 0%,#0e0e10 100%)`,
       }"
@@ -59,13 +59,13 @@ const initials = computed(() =>
 
       <!-- category tag -->
       <span
-        class="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-wide text-ink"
+        class="absolute left-3 top-3 z-10 rounded-full bg-white/90 px-3 py-1 text-[0.62rem] font-semibold uppercase tracking-wide text-black"
         >{{ category }}</span
       >
 
       <!-- hover arrow -->
       <span
-        class="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-white text-ink opacity-0 transition duration-300 group-hover:opacity-100 group-hover:rotate-6"
+        class="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-full bg-white text-black opacity-0 transition duration-300 group-hover:opacity-100 group-hover:rotate-6"
       >
         <ArrowIcon :size="16" />
       </span>
@@ -99,7 +99,7 @@ const initials = computed(() =>
       <span
         v-for="tech in project.technologies.slice(0, 3)"
         :key="tech"
-        class="rounded-full border border-black/8 bg-black/3 px-3 py-1 text-xs text-ink/65"
+        class="rounded-full border border-ink/8 bg-ink/3 px-3 py-1 text-xs text-ink/65"
         >{{ tech }}</span
       >
     </div>

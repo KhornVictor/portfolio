@@ -37,8 +37,8 @@ const visible = computed(() =>
         class="rounded-full px-4 py-2 text-sm font-medium transition"
         :class="
           active === f
-            ? 'bg-ink text-white'
-            : 'text-ink/55 hover:bg-black/5 hover:text-ink'
+            ? 'bg-ink text-paper'
+            : 'text-ink/55 hover:bg-ink/5 hover:text-ink'
         "
         @click="active = f"
       >
