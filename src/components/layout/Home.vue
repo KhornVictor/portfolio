@@ -188,7 +188,7 @@ const year = new Date().getFullYear();
 
         <section
           id="work"
-          class="panel-soft overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
+          class="panel-soft h-screen overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
         >
           <SelectedWork :projects="data.projects" :hide-source="isClient" />
         </section>

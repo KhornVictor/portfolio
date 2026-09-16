@@ -53,6 +53,11 @@ function toggleFullscreen() {
   if (document.fullscreenElement) void document.exitFullscreen();
   else void document.documentElement.requestFullscreen?.();
 }
+
+function closeWindow() {
+  window.close();
+}
+
 const onFsChange = () => (fullscreen.value = !!document.fullscreenElement);
 
 const hidden = ref(false);
@@ -188,16 +193,16 @@ onBeforeUnmount(() => {
         ></i>
       </button>
 
-      <a
+      <button
         class="tray-btn power"
         target="_blank"
         rel="noreferrer"
-        :href="talkHref"
+        @click="closeWindow"
         title="Let's talk"
         aria-label="Let's talk"
       >
         <i class="fa-solid fa-power-off"></i>
-      </a>
+      </button>
     </div>
   </header>
 </template>
