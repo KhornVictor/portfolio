@@ -29,21 +29,34 @@ withDefaults(defineProps<PlayerCardProps>(), {
   <div
     class="fifa-card group relative w-full h-full rounded-[18px] bg-linear-to-b from-[#164377] via-[#1a4f8b] to-[#0f3460] overflow-hidden select-none font-black shadow-[0_12px_28px_rgba(0,0,0,0.4)] border border-blue-400/20 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_22px_45px_rgba(0,0,0,0.6),0_0_35px_rgba(26,79,139,0.55),0_0_15px_rgba(214,24,42,0.35)] cursor-pointer"
   >
-    <!-- Prismatic Metallic Foil Sheen Sweep on Hover -->
     <div
       class="foil-sheen pointer-events-none absolute -inset-full top-0 block -skew-x-12 opacity-0 transition-all duration-1000 group-hover:translate-x-full group-hover:opacity-100 z-50"
     ></div>
-
-    <!-- Subtle Angled Geometric Facets (FUT Special Card Texture) -->
-    <div class="absolute inset-0 pointer-events-none opacity-15 overflow-hidden">
-      <svg class="w-full h-full text-white" viewBox="0 0 200 300" preserveAspectRatio="none">
-        <polygon points="0,0 200,60 200,90 0,30" fill="currentColor" opacity="0.4" />
-        <polygon points="0,120 200,180 200,210 0,150" fill="currentColor" opacity="0.3" />
-        <polygon points="0,240 200,290 200,300 0,270" fill="currentColor" opacity="0.5" />
+    <div
+      class="absolute inset-0 pointer-events-none opacity-15 overflow-hidden"
+    >
+      <svg
+        class="w-full h-full text-white"
+        viewBox="0 0 200 300"
+        preserveAspectRatio="none"
+      >
+        <polygon
+          points="0,0 200,60 200,90 0,30"
+          fill="currentColor"
+          opacity="0.4"
+        />
+        <polygon
+          points="0,120 200,180 200,210 0,150"
+          fill="currentColor"
+          opacity="0.3"
+        />
+        <polygon
+          points="0,240 200,290 200,300 0,270"
+          fill="currentColor"
+          opacity="0.5"
+        />
       </svg>
     </div>
-
-    <!-- Top-Right FIFA Trophy/Logo with Golden Aura on Hover -->
     <div
       class="trophy-badge absolute top-4 right-5.5 flex flex-col items-center z-30 transition-all duration-300 group-hover:scale-110"
     >
@@ -58,23 +71,21 @@ withDefaults(defineProps<PlayerCardProps>(), {
         FIFA
       </span>
     </div>
-
-    <!-- Stylized Giant Background Year '95' -->
     <div
       class="absolute top-3.75 left-2.5 flex text-[350px] leading-[0.8] font-black z-10 pointer-events-none select-none"
     >
-      <span class="giant-num-1 text-[#0b2e59] duration-500 transition-all">9</span>
-      <span class="giant-num-2 text-[#d6182a] -ml-5 duration-500 transition-all">5</span>
+      <span class="giant-num-1 text-[#0b2e59] duration-500 transition-all"
+        >9</span
+      >
+      <span class="giant-num-2 text-[#d6182a] -ml-5 duration-500 transition-all"
+        >5</span
+      >
     </div>
-
-    <!-- Cutout Player Image with 3D Pop-out on Hover -->
     <img
       src="/me.png"
       :alt="name"
       class="player-cutout absolute bottom-13 left-1/2 h-95 object-contain z-20 pointer-events-none transition-all duration-500 ease-out"
     />
-
-    <!-- Vertical Nation Strip (CAM) -->
     <div
       class="absolute right-4.5 bottom-12 w-11 h-41.25 rounded-full flex flex-col items-center py-1.5 z-30"
     >
@@ -128,7 +139,9 @@ withDefaults(defineProps<PlayerCardProps>(), {
         <div
           class="position-badge bg-[#f7d117] rounded-full border border-black flex items-center px-1.5 py-0.5 gap-1 shrink-0 shadow-xs transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_0_14px_rgba(247,209,23,0.85)]"
         >
-          <i class="fa-solid fa-shield-halved w-5 h-5 text-white drop-shadow-2xs"></i>
+          <i
+            class="fa-solid fa-shield-halved w-5 h-5 text-white drop-shadow-2xs"
+          ></i>
           <span
             class="text-[#d81e05] text-[10px] font-black tracking-wider leading-none"
           >
