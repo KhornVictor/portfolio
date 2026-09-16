@@ -6,6 +6,8 @@ import ProjectCard from "../ui/ProjectCard.vue";
 import ArrowIcon from "../ui/ArrowIcon.vue";
 import WantedPoster from "../ui/WantedPoster.vue";
 import FIFA from "../ui/FIFA.vue";
+import ITC from "../ui/ITC.vue";
+import Pokemon from "../ui/Pokemon.vue";
 
 const props = defineProps<{ projects: Project[]; hideSource?: boolean }>();
 
@@ -28,7 +30,7 @@ const visible = computed(() =>
 );
 
 const currentIndex = ref(0);
-const totalElements = 2;
+const totalElements = 4;
 
 let timer = 0;
 
@@ -67,6 +69,23 @@ onUnmounted(() => {
           weight="75 kg"
           player-image="/assets/chanthhea-cutout.png"
         />
+        <ITC
+          v-else-if="currentIndex === 2"
+          name="KHORN VICTOR"
+          khmer-name="ឃន វ៉ិចទ័រ"
+          student-id="e20230078"
+          department="ដឺប៉ាតឺម៉ង់ព័ត៌មានវិទ្យាសាស្ត្រ និងទំនាក់ទំនង"
+          photo-url="/itc-student.png"
+        />
+        <Pokemon
+          v-else-if="currentIndex === 3"
+          name="KHORN VICTOR"
+          :hp="120000"
+          species="Full-Stack Pokémon"
+          height="1.79 m"
+          weight="75 kg"
+          image="/pokemon-victor-transparent.png"
+        />
       </Transition>
 
       <div
@@ -102,6 +121,22 @@ onUnmounted(() => {
       </div>
       <div>
         <div class="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-3">
+          <ProjectCard
+            v-for="item in visible"
+            :key="item.project.title"
+            :project="item.project"
+            :index="item.index"
+            :category="item.category"
+            :hide-source="hideSource"
+          />
+          <ProjectCard
+            v-for="item in visible"
+            :key="item.project.title"
+            :project="item.project"
+            :index="item.index"
+            :category="item.category"
+            :hide-source="hideSource"
+          />
           <ProjectCard
             v-for="item in visible"
             :key="item.project.title"
