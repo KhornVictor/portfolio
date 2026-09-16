@@ -3,63 +3,36 @@ import { computed } from "vue";
 import type { Portfolio } from "../../service/portfolio.service";
 import { PROMPT_HOST, PROMPT_USER } from "../../terminal/commands";
 
+import archLogoText from "../../assets/markdown/Arch.txt?raw";
+import appleLogoText from "../../assets/markdown/Apple.txt?raw";
+
 const props = withDefaults(
   defineProps<{ portfolio: Portfolio | null; variant?: "arch" | "mac" }>(),
   { variant: "arch" },
 );
 
-// Arch-style logo, split so the top half and bottom half can be tinted differently.
-const LOGO = [
-  "                  -`",
-  "                 .o+`",
-  "                `ooo/",
-  "               `+oooo:",
-  "              `+oooooo:",
-  "              -+oooooo+:",
-  "            `/:-:++oooo+:",
-  "           `/++++/+++++++:",
-  "          `/++++++++++++++:",
-  "         `/+++ooooooooooooo/`",
-  "        ./ooosssso++osssssso+`",
-  "       .oossssso-````/ossssss+`",
-  "      -osssssso.      :ssssssso.",
-  "     :osssssss/        osssso+++.",
-  "    /ossssssss/        +ssssooo/-",
-  "  `/ossssso+/:-        -:/+osssso+-",
-  " `+sso+:-`                 `.-/+oso:",
-  "`++:.                           `-/+/",
-  ".`                                 `/",
-];
+const LOGO = archLogoText.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
 const SPLIT = 11;
+const APPLE = appleLogoText.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
 
-// Apple logo for the macOS desktop variant.
-const APPLE = [
-  "                    c.'",
-  "                 ,xNMM.",
-  "               .OMMMMo",
-  "               lMM\"",
-  "     .;loddo:.  .olloddol;.",
-  "   cKMMMMMMMMMMNWMMMMMMMMMM0:",
-  " .KMMMMMMMMMMMMMMMMMMMMMMMWd.",
-  " XMMMMMMMMMMMMMMMMMMMMMMMX.",
-  ";MMMMMMMMMMMMMMMMMMMMMMMM:",
-  ":MMMMMMMMMMMMMMMMMMMMMMMM:",
-  ".MMMMMMMMMMMMMMMMMMMMMMMMX.",
-  " kMMMMMMMMMMMMMMMMMMMMMMMMWd.",
-  " 'XMMMMMMMMMMMMMMMMMMMMMMMMMMk",
-  "  'XMMMMMMMMMMMMMMMMMMMMMMMMK.",
-  "    kMMMMMMMMMMMMMMMMMMMMMMd",
-  "     ;KMMMMMMMWXXWMMMMMMMk.",
-  "       \"cooc*\"    \"*coo'\"",
-];
-// Classic rainbow bands for the Apple logo.
 const APPLE_TONES = [
-  "#4ade80", "#4ade80", "#4ade80", "#4ade80",
-  "#fbbf24", "#fbbf24", "#fbbf24",
-  "#fb923c", "#fb923c", "#fb923c",
-  "#f87171", "#f87171", "#f87171",
-  "#c084fc", "#c084fc",
-  "#60a5fa", "#60a5fa",
+  "#4ade80",
+  "#4ade80",
+  "#4ade80",
+  "#4ade80",
+  "#fbbf24",
+  "#fbbf24",
+  "#fbbf24",
+  "#fb923c",
+  "#fb923c",
+  "#fb923c",
+  "#f87171",
+  "#f87171",
+  "#f87171",
+  "#c084fc",
+  "#c084fc",
+  "#60a5fa",
+  "#60a5fa",
 ];
 
 const title = computed(() => `${PROMPT_USER}@${PROMPT_HOST}`);
@@ -80,7 +53,8 @@ const rows = computed<{ label: string; value: string; href?: string }[]>(() => {
       { label: "OS", value: "macOS Portfolio Edition" },
       {
         label: "Host",
-        value: personal?.website.replace(/^https?:\/\//, "") ?? "khornvictor.com",
+        value:
+          personal?.website.replace(/^https?:\/\//, "") ?? "khornvictor.com",
         href: personal?.website,
       },
       { label: "Shell", value: "zsh 5.9" },
@@ -160,7 +134,8 @@ const swatches = [
         <span class="text-[#4ade80] font-semibold">{{ title }}</span>
       </div>
       <div v-if="variant === 'mac'" class="text-white/70">
-        {{ portfolio?.personal.name ?? "Khorn Victor" }} · {{ portfolio?.personal.label ?? "Full-Stack Developer" }}
+        {{ portfolio?.personal.name ?? "Khorn Victor" }} ·
+        {{ portfolio?.personal.label ?? "Full-Stack Developer" }}
       </div>
       <div class="text-white/25">{{ "─".repeat(title.length + 6) }}</div>
 
