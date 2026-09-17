@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // Renders every open window and mounts the right app inside it.
 import type { Component } from "vue";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { AppId } from "../../desktop/types";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { AppId } from "../../pages/desktop/types";
 import Window from "./Window.vue";
 import FinderApp from "../apps/FinderApp.vue";
 import TerminalApp from "../apps/TerminalApp.vue";

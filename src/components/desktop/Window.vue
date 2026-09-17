@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { WindowState } from "../../desktop/types";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { WindowState } from "../../pages/desktop/types";
 
 const props = defineProps<{ win: WindowState; active: boolean }>();
 const wm = useWindowManager();

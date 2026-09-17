@@ -1,7 +1,7 @@
 // Terminal command parser + registry. Pure TypeScript: no DOM, no Vue.
 // The UI hands us the raw input string and paints whatever we return.
 
-import type { Portfolio } from "../service/portfolio.service";
+import type { Portfolio } from "../../service/portfolio.service";
 import type { CommandResult, Segment, TerminalLine, Tone } from "./types";
 
 export const PROMPT_USER = "khorn";
@@ -126,19 +126,43 @@ const commands: Record<string, CommandDef> = {
     run: ({ portfolio }) => {
       if (!portfolio) return notLoaded;
       const k = portfolio.skills;
+      if (Array.isArray(k)) {
+        const groups: Record<string, string[]> = {};
+        for (const item of k) {
+          const tags = item.tag?.length ? item.tag : ["Other"];
+          for (const t of tags) {
+            if (!groups[t]) groups[t] = [];
+            groups[t].push(item.name);
+          }
+        }
+        const lines: TerminalLine[] = [];
+        const entries = Object.entries(groups);
+        entries.forEach(([grp, names], idx) => {
+          if (idx > 0) lines.push(blank());
+          lines.push(heading(`${grp}:`));
+          lines.push(...list(names));
+        });
+        return { lines };
+      }
+      const legacy = k as unknown as {
+        languages?: string[];
+        backend?: string[];
+        database_and_orms?: string[];
+        devops_and_tools?: string[];
+      };
       return {
         lines: [
           heading("Languages:"),
-          ...list(k.languages),
+          ...list(legacy.languages || []),
           blank(),
           heading("Backend:"),
-          ...list(k.backend),
+          ...list(legacy.backend || []),
           blank(),
           heading("Database & ORMs:"),
-          ...list(k.database_and_orms),
+          ...list(legacy.database_and_orms || []),
           blank(),
           heading("DevOps & Tools:"),
-          ...list(k.devops_and_tools),
+          ...list(legacy.devops_and_tools || []),
         ],
       };
     },

@@ -61,6 +61,15 @@ function closeWindow() {
 const onFsChange = () => (fullscreen.value = !!document.fullscreenElement);
 
 const hidden = ref(false);
+const isHoveredNearTop = ref(false);
+const isHeaderHovered = ref(false);
+let hoverLeaveTimeout: ReturnType<typeof setTimeout> | undefined;
+
+const isHidden = computed(() => {
+  if (isHoveredNearTop.value || isHeaderHovered.value) return false;
+  return hidden.value;
+});
+
 let lastY = window.scrollY;
 let ticking = false;
 const SLACK = 8;
@@ -78,6 +87,34 @@ function onScroll() {
   });
 }
 
+function onMouseMove(e: MouseEvent) {
+  // Reveal when cursor is within top 32px of the viewport
+  if (e.clientY <= 32) {
+    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    isHoveredNearTop.value = true;
+  } else if (!isHeaderHovered.value && isHoveredNearTop.value && e.clientY > 80) {
+    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    hoverLeaveTimeout = setTimeout(() => {
+      isHoveredNearTop.value = false;
+    }, 100);
+  }
+}
+
+function onHeaderEnter() {
+  if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+  isHeaderHovered.value = true;
+}
+
+function onHeaderLeave(e: MouseEvent) {
+  isHeaderHovered.value = false;
+  if (e.clientY > 32) {
+    if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
+    hoverLeaveTimeout = setTimeout(() => {
+      isHoveredNearTop.value = false;
+    }, 200);
+  }
+}
+
 const openVision = () => {
   window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ", "_blank");
 };
@@ -86,18 +123,31 @@ onMounted(() => {
   clock = setInterval(() => (now.value = new Date()), 1000);
   document.addEventListener("fullscreenchange", onFsChange);
   window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("mousemove", onMouseMove, { passive: true });
 });
 onBeforeUnmount(() => {
   if (clock) clearInterval(clock);
+  if (hoverLeaveTimeout) clearTimeout(hoverLeaveTimeout);
   document.removeEventListener("fullscreenchange", onFsChange);
   window.removeEventListener("scroll", onScroll);
+  window.removeEventListener("mousemove", onMouseMove);
 });
 </script>
 
 <template>
+  <!-- Invisible hover trigger zone at the very top of the screen -->
+  <div
+    class="fixed inset-x-0 top-0 h-4 z-40 pointer-events-auto"
+    aria-hidden="true"
+    @mouseenter="isHoveredNearTop = true"
+    @mousemove="isHoveredNearTop = true"
+  ></div>
+
   <header
     class="bar fixed inset-x-3 top-3 z-50 flex items-center gap-3 px-3 sm:inset-x-4 sm:top-4 sm:px-4"
-    :class="{ 'is-hidden': hidden }"
+    :class="{ 'is-hidden': isHidden }"
+    @mouseenter="onHeaderEnter"
+    @mouseleave="onHeaderLeave"
   >
     <div class="flex min-w-0 items-center gap-2.5">
       <button

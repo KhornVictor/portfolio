@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // The prompt prefix, shared by the input row and echoed commands.
 // `bash` → khorn@portfolio:~$   `zsh` → khorn@portfolio ~ %
-import { PROMPT_CWD, PROMPT_HOST, PROMPT_USER } from "../../terminal/commands";
+import { PROMPT_CWD, PROMPT_HOST, PROMPT_USER } from "../../pages/terminal/commands";
 withDefaults(defineProps<{ shell?: "bash" | "zsh" }>(), { shell: "bash" });
 </script>
 

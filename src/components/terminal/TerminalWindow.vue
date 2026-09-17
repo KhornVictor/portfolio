@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from "vue";
 import type { Portfolio } from "../../service/portfolio.service";
-import { PROMPT_HOST, PROMPT_USER, runCommand } from "../../terminal/commands";
-import type { TerminalEntry } from "../../terminal/types";
+import { PROMPT_HOST, PROMPT_USER, runCommand } from "../../pages/terminal/commands";
+import type { TerminalEntry } from "../../pages/terminal/types";
 import TerminalHeader from "./TerminalHeader.vue";
 import TerminalInput from "./TerminalInput.vue";
 import TerminalOutput from "./TerminalOutput.vue";

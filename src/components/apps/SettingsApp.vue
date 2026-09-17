@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
 import { aboutMac, owner } from "../../data/portfolio";
-import { useSettings, wallpapers, type DockPosition } from "../../desktop/useSettings";
-import type { WindowState } from "../../desktop/types";
+import { useSettings, wallpapers, type DockPosition } from "../../pages/desktop/useSettings";
+import type { WindowState } from "../../pages/desktop/types";
 
 const props = defineProps<{ win: WindowState }>();
 const settings = useSettings();

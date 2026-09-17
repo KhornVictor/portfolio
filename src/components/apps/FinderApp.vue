@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from "vue";
-import { usePortfolio } from "../../desktop/usePortfolio";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { WindowState } from "../../desktop/types";
+import { usePortfolio } from "../../pages/desktop/usePortfolio";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { WindowState } from "../../pages/desktop/types";
 import AppIcon from "../desktop/AppIcon.vue";
 
 const props = defineProps<{ win: WindowState }>();
@@ -116,7 +116,23 @@ const items = computed<Item[]>(() => {
           open: () => openDoc(`education:${i}`, `${e.institution}.md`),
         })),
       ];
-    case "skills":
+    case "skills": {
+      if (pf && Array.isArray(pf.skills) && pf.skills.length) {
+        const uniqueTags = Array.from(
+          new Set<string>(pf.skills.flatMap((s) => (s.tag?.length ? s.tag : ["General"]))),
+        );
+        return uniqueTags.map((t) => {
+          const k = t.toLowerCase();
+          return {
+            id: k,
+            name: `${k}.txt`,
+            icon: "file",
+            kind: "Plain Text",
+            size: "1 KB",
+            open: () => openDoc(`skills:${k}`, `${k}.txt`),
+          };
+        });
+      }
       return (["languages", "backend", "database", "devops"] as const).map((k) => ({
         id: k,
         name: `${k}.txt`,
@@ -125,6 +141,7 @@ const items = computed<Item[]>(() => {
         size: "1 KB",
         open: () => openDoc(`skills:${k}`, `${k}.txt`),
       }));
+    }
   }
 });
 

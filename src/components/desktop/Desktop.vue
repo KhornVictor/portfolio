@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { loadPortfolio, type Portfolio } from "../../service/portfolio.service";
-import { providePortfolio } from "../../desktop/usePortfolio";
-import { useSettings, wallpapers } from "../../desktop/useSettings";
-import { useWindowManager } from "../../desktop/useWindowManager";
+import { providePortfolio } from "../../pages/desktop/usePortfolio";
+import { useSettings, wallpapers } from "../../pages/desktop/useSettings";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
 import { owner } from "../../data/portfolio";
 import MenuBar from "./MenuBar.vue";
 import Dock from "./Dock.vue";

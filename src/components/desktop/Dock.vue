@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { apps } from "../../desktop/apps";
-import { useSettings } from "../../desktop/useSettings";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { AppId } from "../../desktop/types";
+import { apps } from "../../pages/desktop/apps";
+import { useSettings } from "../../pages/desktop/useSettings";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { AppId } from "../../pages/desktop/types";
 import AppIcon from "./AppIcon.vue";
 
 const wm = useWindowManager();

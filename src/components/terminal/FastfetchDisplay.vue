@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { Portfolio } from "../../service/portfolio.service";
-import { PROMPT_HOST, PROMPT_USER } from "../../terminal/commands";
+import { PROMPT_HOST, PROMPT_USER } from "../../pages/terminal/commands";
 
 import archLogoText from "../../assets/markdown/Arch.txt?raw";
 import appleLogoText from "../../assets/markdown/Apple.txt?raw";
+import { APPLE_TONES } from "./theme/Apple.tone";
 
 const props = withDefaults(
   defineProps<{ portfolio: Portfolio | null; variant?: "arch" | "mac" }>(),
@@ -15,33 +16,18 @@ const LOGO = archLogoText.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
 const SPLIT = 11;
 const APPLE = appleLogoText.replace(/\r\n/g, "\n").replace(/\n$/, "").split("\n");
 
-const APPLE_TONES = [
-  "#4ade80",
-  "#4ade80",
-  "#4ade80",
-  "#4ade80",
-  "#fbbf24",
-  "#fbbf24",
-  "#fbbf24",
-  "#fb923c",
-  "#fb923c",
-  "#fb923c",
-  "#f87171",
-  "#f87171",
-  "#f87171",
-  "#c084fc",
-  "#c084fc",
-  "#60a5fa",
-  "#60a5fa",
-];
-
 const title = computed(() => `${PROMPT_USER}@${PROMPT_HOST}`);
 
 const rows = computed<{ label: string; value: string; href?: string }[]>(() => {
   const p = props.portfolio;
   const personal = p?.personal;
   const skillCount = p
-    ? Object.values(p.skills).reduce((n, arr) => n + arr.length, 0)
+    ? Array.isArray(p.skills)
+      ? p.skills.length
+      : Object.values(p.skills as Record<string, unknown[]>).reduce(
+          (n, arr) => n + (Array.isArray(arr) ? arr.length : 0),
+          0,
+        )
     : 0;
   const res =
     typeof window !== "undefined"

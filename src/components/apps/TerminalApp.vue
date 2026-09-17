@@ -2,12 +2,12 @@
 // Terminal inside the macOS desktop. Reuses the /terminal command engine and
 // output/input components; adds `open <app>` via the window manager.
 import { nextTick, onMounted, ref } from "vue";
-import { runCommand } from "../../terminal/commands";
-import type { TerminalEntry } from "../../terminal/types";
-import { resolveAppId } from "../../desktop/apps";
-import { usePortfolio } from "../../desktop/usePortfolio";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { WindowState } from "../../desktop/types";
+import { runCommand } from "../../pages/terminal/commands";
+import type { TerminalEntry } from "../../pages/terminal/types";
+import { resolveAppId } from "../../pages/desktop/apps";
+import { usePortfolio } from "../../pages/desktop/usePortfolio";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { WindowState } from "../../pages/desktop/types";
 import TerminalInput from "../terminal/TerminalInput.vue";
 import TerminalOutput from "../terminal/TerminalOutput.vue";
 

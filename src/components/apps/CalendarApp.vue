@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { calendarEvents } from "../../data/portfolio";
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 
 defineProps<{ win: WindowState }>();
 

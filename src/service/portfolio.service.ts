@@ -24,12 +24,14 @@ export interface Project {
   live_url: string;
 }
 
-export interface Skills {
-  languages: string[];
-  backend: string[];
-  database_and_orms: string[];
-  devops_and_tools: string[];
+export interface Skill {
+  _id?: string;
+  name: string;
+  icon: string;
+  tag: string[];
 }
+
+export type Skills = Skill[];
 
 export interface Experience {
   company: string;
@@ -94,7 +96,7 @@ export interface Portfolio {
   personal: Personal;
   social: Social[];
   projects: Project[];
-  skills: Skills;
+  skills: Skill[];
   experiences: Experience[];
   educations: Education[];
   certificates: Certificate[];

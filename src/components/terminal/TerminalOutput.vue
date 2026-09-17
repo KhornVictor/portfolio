@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Portfolio } from "../../service/portfolio.service";
-import type { TerminalEntry, Tone } from "../../terminal/types";
+import type { TerminalEntry, Tone } from "../../pages/terminal/types";
 import FastfetchDisplay from "./FastfetchDisplay.vue";
 import TerminalPrompt from "./TerminalPrompt.vue";
 

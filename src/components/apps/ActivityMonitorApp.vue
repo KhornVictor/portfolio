@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { processes as base, stats } from "../../data/portfolio";
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 
 defineProps<{ win: WindowState }>();
 

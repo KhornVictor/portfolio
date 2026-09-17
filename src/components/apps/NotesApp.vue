@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { notes } from "../../data/portfolio";
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 
 const props = defineProps<{ win: WindowState }>();
 

@@ -9,21 +9,57 @@ export const owner = {
   linkedin: "https://www.linkedin.com/in/khorn-victor-794a6635a",
   machine: "Khorn's MacBook Pro",
 };
+import type { Skill } from "../service/portfolio.service";
 
-export const skills = [
-  "TypeScript",
-  "JavaScript",
-  "React",
-  "Vue",
-  "Node.js",
-  "NestJS",
-  "Prisma",
-  "PostgreSQL",
-  "Redis",
-  "Docker",
-  "Git",
-  "Linux",
+export const defaultSkills: Skill[] = [
+  {
+    name: "NestJS",
+    icon: "nest",
+    tag: ["Backend"],
+  },
+  {
+    name: "NodeJS",
+    icon: "nodejs",
+    tag: ["Backend"],
+  },
+  {
+    name: "ExpressJS",
+    icon: "express",
+    tag: ["Backend"],
+  },
+  {
+    name: "MongoDB",
+    icon: "mongodb",
+    tag: ["Database"],
+  },
+  {
+    name: "PostgreSQL",
+    icon: "postgresql",
+    tag: ["Database"],
+  },
+  {
+    name: "MySQL",
+    icon: "mysql",
+    tag: ["Database"],
+  },
+  {
+    name: "Redis",
+    icon: "redis",
+    tag: ["Database"],
+  },
+  {
+    name: "Docker",
+    icon: "docker",
+    tag: ["DevOps"],
+  },
+  {
+    name: "Kubernetes",
+    icon: "kubernetes",
+    tag: ["DevOps"],
+  },
 ];
+
+export const skills: string[] = defaultSkills.map((s) => s.name);
 
 export const interests = [
   "Backend architecture",

@@ -2,9 +2,9 @@
 // Launchpad / Spotlight-style overlay. On phones it replaces the desktop icons;
 // on desktop it's opened from the menu bar search icon (⌘ Space).
 import { computed, onMounted, ref } from "vue";
-import { apps } from "../../desktop/apps";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { AppId } from "../../desktop/types";
+import { apps } from "../../pages/desktop/apps";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { AppId } from "../../pages/desktop/types";
 import AppIcon from "./AppIcon.vue";
 
 const props = defineProps<{ overlay?: boolean }>();

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 import AppIcon from "../desktop/AppIcon.vue";
 
 defineProps<{ win: WindowState }>();

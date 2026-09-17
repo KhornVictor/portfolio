@@ -6,7 +6,7 @@ defineProps<{ available: string; phone?: string; email: string; location: string
 
 <template>
   <div class="flex flex-col items-center px-4 py-14 text-center sm:py-20">
-    <span class="pill">
+    <!-- <span class="pill">
       <span class="relative flex h-2 w-2">
         <span
           class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-70"
@@ -14,7 +14,7 @@ defineProps<{ available: string; phone?: string; email: string; location: string
         <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
       </span>
       {{ available }}
-    </span>
+    </span> -->
 
     <h2
       class="display mt-6 text-[clamp(2rem,7vw,4.2rem)] text-ink"

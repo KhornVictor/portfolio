@@ -67,12 +67,12 @@ export const SECTIONS: SectionDef[] = [
   {
     name: "skills",
     label: "Skills",
-    single: true,
+    single: false,
+    titleKey: "name",
     fields: [
-      { key: "languages", label: "Languages", type: "list" },
-      { key: "backend", label: "Backend", type: "list" },
-      { key: "database_and_orms", label: "Databases & ORMs", type: "list" },
-      { key: "devops_and_tools", label: "DevOps & tools", type: "list" },
+      { key: "name", label: "Name", type: "text", required: true },
+      { key: "icon", label: "Icon / Slug", type: "text" },
+      { key: "tag", label: "Tags", type: "list" },
     ],
   },
   {

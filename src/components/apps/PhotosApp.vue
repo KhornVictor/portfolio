@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 import { imageUrl } from "../../config/assets";
 
 defineProps<{ win: WindowState }>();

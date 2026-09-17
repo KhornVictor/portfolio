@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { owner, skills } from "../../data/portfolio";
-import { usePortfolio } from "../../desktop/usePortfolio";
-import { useWindowManager } from "../../desktop/useWindowManager";
-import type { WindowState } from "../../desktop/types";
+import { usePortfolio } from "../../pages/desktop/usePortfolio";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
+import type { WindowState } from "../../pages/desktop/types";
 
 defineProps<{ win: WindowState }>();
 const portfolio = usePortfolio();

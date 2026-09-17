@@ -38,6 +38,61 @@ let levels = new Float32Array(0);
 const BAR_ALPHA = 0.75; // brightness of cells inside a bar
 const PEAK_ALPHA = 1; // the sinking peak marker on top of each bar
 
+// Water ripples: concentric waves that propagate outward when clicking the grid.
+interface Ripple {
+  x: number;
+  y: number;
+  startTime: number;
+  duration: number; // in seconds
+  speed: number; // px / sec
+  wavelength: number; // px
+  sigma: number; // envelope width px
+  amplitude: number; // px displacement
+  // Precomputed values updated once per frame:
+  age: number;
+  decay: number;
+  rFront: number;
+  minR: number;
+  maxR: number;
+}
+
+const ripples: Ripple[] = [];
+const MAX_RIPPLES = 10;
+let lastRippleTime = 0;
+let lastRippleX = -9999;
+let lastRippleY = -9999;
+
+function addRipple(x: number, y: number) {
+  const now = performance.now();
+  // Prevent duplicate triggers for the same click event
+  if (now - lastRippleTime < 30 && Math.hypot(x - lastRippleX, y - lastRippleY) < 10) {
+    return;
+  }
+  lastRippleTime = now;
+  lastRippleX = x;
+  lastRippleY = y;
+
+  if (ripples.length >= MAX_RIPPLES) {
+    ripples.shift();
+  }
+
+  ripples.push({
+    x,
+    y,
+    startTime: now,
+    duration: 2.6,
+    speed: 360,
+    wavelength: 52,
+    sigma: 56,
+    amplitude: 18,
+    age: 0,
+    decay: 1,
+    rFront: 0,
+    minR: 0,
+    maxR: 0,
+  });
+}
+
 // The music disc plays through a YouTube iframe, whose audio is cross-origin
 // and can't be analysed. While it plays we synthesise a plausible spectrum
 // instead: a beat envelope shaped like a mix (strong lows, tapering highs)
@@ -126,6 +181,23 @@ function frame() {
   const live =
     music.playing.value && music.visualizer.value && synthSample(levels, performance.now());
 
+  // Update active water ripples
+  const now = performance.now();
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const rip = ripples[i];
+    const age = (now - rip.startTime) / 1000;
+    if (age >= rip.duration) {
+      ripples.splice(i, 1);
+      continue;
+    }
+    rip.age = age;
+    rip.decay = Math.pow(1 - age / rip.duration, 1.5);
+    rip.rFront = rip.speed * age;
+    rip.minR = Math.max(0, rip.rFront - rip.sigma * 2.8);
+    rip.maxR = rip.rFront + rip.wavelength * 0.25;
+  }
+  const numRipples = ripples.length;
+
   for (let r = 0; r < rows; r++) {
     // Rows counted from the bottom, so bars grow upward like CAVA.
     const fromBottom = rows - 1 - r;
@@ -153,6 +225,48 @@ function frame() {
         }
       }
 
+      // Water ripples displacement, crest lighting, and turbulence
+      let rippleOx = 0;
+      let rippleOy = 0;
+      let maxRippleGlow = 0;
+      let maxRippleDisturb = 0;
+
+      if (numRipples > 0) {
+        for (let i = 0; i < numRipples; i++) {
+          const rip = ripples[i];
+          const rx = cx - rip.x;
+          const ry = cy - rip.y;
+          const dist = Math.hypot(rx, ry);
+
+          // Check if within wave packet or initial splash center
+          if (dist < rip.minR || dist > rip.maxR) {
+            if (rip.age < 0.25 && dist < 60) {
+              const splash = (1 - rip.age / 0.25) * (1 - dist / 60);
+              maxRippleGlow = Math.max(maxRippleGlow, splash * 0.85);
+              maxRippleDisturb = Math.max(maxRippleDisturb, splash * 0.25);
+            }
+            continue;
+          }
+
+          const dr = dist - rip.rFront;
+          const env = Math.exp(-(dr * dr) / (2 * rip.sigma * rip.sigma));
+          const wave = Math.cos((dr / rip.wavelength) * Math.PI * 2) * env;
+          const geom = Math.sqrt(60 / Math.max(dist, 60));
+          const disp = wave * rip.amplitude * rip.decay * geom;
+
+          if (dist > 0.001) {
+            rippleOx += (rx / dist) * disp;
+            rippleOy += (ry / dist) * disp;
+          }
+
+          const crest = Math.max(0, wave) * rip.decay * geom;
+          if (crest > maxRippleGlow) maxRippleGlow = crest;
+
+          const disturb = Math.abs(wave) * rip.decay * geom * 0.16;
+          if (disturb > maxRippleDisturb) maxRippleDisturb = disturb;
+        }
+      }
+
       // Spectrum bar for this column: cells below the bar height light up,
       // the topmost lit cell (or the held peak) glows brightest.
       let bar = 0;
@@ -167,15 +281,17 @@ function frame() {
         }
       }
 
-      // Randomly flip the bit — faster near the cursor and inside a bar
-      if (Math.random() < 0.004 + intensity * 0.06 + bar * 0.15) bits[idx] ^= 1;
+      // Randomly flip the bit — faster near cursor, inside bar, or during water ripple turbulence
+      if (Math.random() < 0.004 + intensity * 0.06 + bar * 0.15 + maxRippleDisturb) {
+        bits[idx] ^= 1;
+      }
 
-      const glow = Math.max(intensity, bar);
+      const glow = Math.max(intensity, bar, maxRippleGlow);
       const alpha = BASE_ALPHA + glow * (MAX_ALPHA - BASE_ALPHA);
       const size = 13 + glow * 5;
       ctx.font = `${size}px "JetBrains Mono", ui-monospace, monospace`;
       ctx.fillStyle = `rgba(${props.color}, ${alpha})`;
-      ctx.fillText(bits[idx] ? "1" : "0", cx + ox, cy + oy);
+      ctx.fillText(bits[idx] ? "1" : "0", cx + ox + rippleOx, cy + oy + rippleOy);
     }
   }
 
@@ -201,6 +317,22 @@ function onMove(e: PointerEvent) {
 
 function onLeave() {
   active = false;
+}
+
+function onPointerDown(e: PointerEvent) {
+  if (e.button !== 0 && e.pointerType === "mouse") return;
+  const target = e.target as HTMLElement | null;
+  if (target && ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName)) return;
+
+  const el = canvas.value;
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+
+  if (x >= 0 && y >= 0 && x <= rect.width && y <= rect.height) {
+    addRipple(x, y);
+  }
 }
 
 function drawStatic() {
@@ -248,6 +380,7 @@ onMounted(() => {
 
   window.addEventListener("pointermove", onMove, { passive: true });
   window.addEventListener("pointerleave", onLeave);
+  window.addEventListener("pointerdown", onPointerDown);
   raf = requestAnimationFrame(frame);
 });
 
@@ -256,9 +389,19 @@ onBeforeUnmount(() => {
   ro?.disconnect();
   window.removeEventListener("pointermove", onMove);
   window.removeEventListener("pointerleave", onLeave);
+  window.removeEventListener("pointerdown", onPointerDown);
+});
+
+defineExpose({
+  triggerRipple: addRipple,
 });
 </script>
 
 <template>
-  <canvas ref="canvas" aria-hidden="true" class="block h-full w-full"></canvas>
+  <canvas
+    ref="canvas"
+    aria-hidden="true"
+    class="block h-full w-full"
+    @pointerdown="onPointerDown"
+  ></canvas>
 </template>

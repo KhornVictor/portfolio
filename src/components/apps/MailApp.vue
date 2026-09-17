@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { mail, owner } from "../../data/portfolio";
-import type { WindowState } from "../../desktop/types";
+import type { WindowState } from "../../pages/desktop/types";
 
 defineProps<{ win: WindowState }>();
 const showList = ref(true);

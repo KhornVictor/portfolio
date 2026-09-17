@@ -10,6 +10,8 @@ import SelectedWork from "../sections/SelectedWork.vue";
 import Services from "../sections/Services.vue";
 import Experience from "../sections/Experience.vue";
 import ContactCTA from "../sections/ContactCTA.vue";
+import Skill from "../sections/Skill.vue";
+import SiteFooter from "./SiteFooter.vue";
 // import FigmaCursor from "../ui/FigmaCursor.vue";
 
 // "main" shows everything; "client" is the trimmed public view (no phone,
@@ -33,6 +35,13 @@ const navigation = computed(() => {
   if (!data.value) return [];
   return [
     { label: "Work", href: "#work", count: String(data.value.projects.length) },
+    {
+      label: "Skills",
+      href: "#skills",
+      count: String(
+        Array.isArray(data.value.skills) ? data.value.skills.length : 0,
+      ),
+    },
     {
       label: "Service",
       href: "#service",
@@ -68,8 +77,6 @@ const location = computed(() =>
     ? `${data.value.personal.location.postalCode ? `${data.value.personal.location.postalCode} ` : ''}${data.value.personal.location.city}, ${data.value.personal.location.country} (${data.value.personal.location.continent})`
     : "",
 );
-
-const year = new Date().getFullYear();
 </script>
 
 <template>
@@ -193,6 +200,13 @@ const year = new Date().getFullYear();
           <SelectedWork :projects="data.projects" :hide-source="isClient" />
         </section>
 
+        <section
+          id="skills"
+          class="panel-soft h-screen overflow-hidden px-5 py-10 sm:px-10 sm:py-14"
+        >
+          <Skill :skills="data.skills" />
+        </section>
+
         <!-- Services -->
         <section
           id="service"
@@ -226,16 +240,13 @@ const year = new Date().getFullYear();
           />
         </section>
 
-        <!-- macOS-style social dock: slides in from the right edge on hover -->
         <SocialDock :socials="socials" :email="data.personal.email" />
 
-        <!-- Footer -->
-        <footer
-          class="flex flex-col items-center justify-between gap-2 px-2 py-4 text-xs text-ink/50 sm:flex-row"
-        >
-          <span>© {{ year }} {{ data.personal.name }}</span>
-          <span>Built with Vue · Designed clean &amp; minimal</span>
-        </footer>
+        <SiteFooter
+          :personal="data.personal"
+          :socials="socials"
+          :navigation="navigation"
+        />
       </div>
     </div>
   </div>

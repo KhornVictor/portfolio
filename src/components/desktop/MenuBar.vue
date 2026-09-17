@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from "vue";
-import { appById } from "../../desktop/apps";
-import { useSettings } from "../../desktop/useSettings";
-import { useWindowManager } from "../../desktop/useWindowManager";
+import { appById } from "../../pages/desktop/apps";
+import { useSettings } from "../../pages/desktop/useSettings";
+import { useWindowManager } from "../../pages/desktop/useWindowManager";
 import { owner } from "../../data/portfolio";
 
 const emit = defineEmits<{ power: [mode: "sleep" | "restart" | "shutdown"]; search: [] }>();

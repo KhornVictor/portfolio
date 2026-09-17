@@ -1,8 +1,5 @@
-// Turns a Finder item payload (e.g. "project:1") into a printable document
-// for TextEdit. Keeps the file-system illusion consistent across apps.
-
-import type { Portfolio } from "../service/portfolio.service";
-import { interests, owner, skills } from "../data/portfolio";
+import type { Portfolio } from "../../service/portfolio.service";
+import { interests, owner, skills } from "../../data/portfolio";
 
 export interface DocBlock {
   type: "h1" | "h2" | "p" | "ul" | "kv";
@@ -39,7 +36,18 @@ export function buildDocument(payload: string | undefined, pf: Portfolio | null)
         h2("Summary"),
         p(pf?.personal.summary ?? owner.tagline),
         h2("Skills"),
-        ul(pf ? [...pf.skills.languages, ...pf.skills.backend, ...pf.skills.database_and_orms, ...pf.skills.devops_and_tools] : skills),
+        ul(
+          pf
+            ? Array.isArray(pf.skills)
+              ? pf.skills.map((s) => s.name)
+              : [
+                  ...((pf.skills as any).languages || []),
+                  ...((pf.skills as any).backend || []),
+                  ...((pf.skills as any).database_and_orms || []),
+                  ...((pf.skills as any).devops_and_tools || []),
+                ]
+            : skills,
+        ),
       ];
       if (pf?.experiences.length) {
         blocks.push(h2("Experience"));
@@ -129,16 +137,32 @@ export function buildDocument(payload: string | undefined, pf: Portfolio | null)
     }
 
     case "skills": {
-      const groups: Record<string, string[]> = pf
-        ? {
-            languages: pf.skills.languages,
-            backend: pf.skills.backend,
-            database: pf.skills.database_and_orms,
-            devops: pf.skills.devops_and_tools,
+      let groups: Record<string, string[]> = {};
+      if (pf && Array.isArray(pf.skills)) {
+        for (const item of pf.skills) {
+          const tags = item.tag?.length ? item.tag : ["General"];
+          for (const t of tags) {
+            const key = t.toLowerCase();
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(item.name);
           }
-        : { all: skills };
-      const key = arg && groups[arg] ? arg : Object.keys(groups)[0]!;
-      return { title: `${key}.txt`, blocks: [h1(key[0]!.toUpperCase() + key.slice(1)), ul(groups[key]!)] };
+        }
+      } else if (pf && pf.skills) {
+        const leg = pf.skills as any;
+        groups = {
+          languages: leg.languages || [],
+          backend: leg.backend || [],
+          database: leg.database_and_orms || [],
+          devops: leg.devops_and_tools || [],
+        };
+      } else {
+        groups = { all: skills };
+      }
+      const key = arg && groups[arg] ? arg : Object.keys(groups)[0] || "all";
+      return {
+        title: `${key}.txt`,
+        blocks: [h1(key[0]!.toUpperCase() + key.slice(1)), ul(groups[key] || [])],
+      };
     }
 
     default:
