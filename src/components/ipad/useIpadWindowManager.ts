@@ -28,11 +28,11 @@ export function useIpadWindowManager(screenRef?: Ref<HTMLElement | null>) {
   const openMultitaskingMenu = ref<WindowSlot | null>(null);
 
   const dockApps = ref<OpenApp[]>([
-    { name: "Camera", icon: "camera", tag: ["System"] },
-    { name: "Safari", icon: "safari", tag: ["Web"] },
-    { name: "Terminal", icon: "terminal", tag: ["System"] },
-    { name: "Notes", icon: "notes", tag: ["System"] },
-    { name: "Settings", icon: "settings", tag: ["System"] },
+    { name: "Camera", icon: "https://storage.needpix.com/rsynced_images/camera-1405559_1280.png", tag: ["System"] },
+    { name: "Safari", icon: "https://cdn-icons-png.flaticon.com/512/564/564442.png", tag: ["Web"] },
+    { name: "Terminal", icon: "https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/app-icons/terminal-voouoqhnm6ptlgpwsxqbq.png/terminal-ls06yn6vypad4u61qnft3.png?_a=DATAiZAAZAA0", tag: ["System"] },
+    { name: "Notes", icon: "https://cdn.iconscout.com/icon/free/png-256/free-apple-notes-icon-svg-download-png-493153.png?f=webp", tag: ["System"] },
+    { name: "Settings", icon: "https://cdn.iconscout.com/icon/free/png-256/free-apple-settings-icon-svg-download-png-493162.png?f=webp", tag: ["System"] },
   ]);
 
   function recordRecentApp(app: OpenApp) {
