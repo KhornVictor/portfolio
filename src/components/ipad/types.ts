@@ -4,6 +4,9 @@ export interface OpenApp {
   tag?: string[];
   url?: string;
   website?: string;
+  iframe?: string;
+  description?: string;
+  skillLevel?: number;
 }
 
 export interface WindowState {

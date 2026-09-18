@@ -59,7 +59,9 @@ export function getSkillWebsite(skill: {
   icon?: string;
   url?: string;
   website?: string;
+  iframe?: string;
 }): string {
+  if (skill.iframe) return skill.iframe;
   if (skill.url) return skill.url;
   if (skill.website) return skill.website;
 

@@ -31,6 +31,9 @@ export interface Skill {
   tag: string[];
   url?: string;
   website?: string;
+  iframe?: string;
+  description?: string;
+  skillLevel?: number;
 }
 
 export type Skills = Skill[];
@@ -127,3 +130,9 @@ export function loadPortfolio(): Promise<Portfolio> {
 export function getSection<K extends keyof Portfolio>(section: K): Promise<Portfolio[K]> {
   return getJSON<Portfolio[K]>(`/api/portfolio/${section}`);
 }
+
+// Convenience helper to fetch skills specifically
+export function getSkills(): Promise<Skill[]> {
+  return getSection("skills");
+}
+
