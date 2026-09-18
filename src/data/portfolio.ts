@@ -12,51 +12,43 @@ export const owner = {
 import type { Skill } from "../service/portfolio.service";
 
 export const defaultSkills: Skill[] = [
-  {
-    name: "NestJS",
-    icon: "nest",
-    tag: ["Backend"],
-  },
-  {
-    name: "NodeJS",
-    icon: "nodejs",
-    tag: ["Backend"],
-  },
-  {
-    name: "ExpressJS",
-    icon: "express",
-    tag: ["Backend"],
-  },
-  {
-    name: "MongoDB",
-    icon: "mongodb",
-    tag: ["Database"],
-  },
-  {
-    name: "PostgreSQL",
-    icon: "postgresql",
-    tag: ["Database"],
-  },
-  {
-    name: "MySQL",
-    icon: "mysql",
-    tag: ["Database"],
-  },
-  {
-    name: "Redis",
-    icon: "redis",
-    tag: ["Database"],
-  },
-  {
-    name: "Docker",
-    icon: "docker",
-    tag: ["DevOps"],
-  },
-  {
-    name: "Kubernetes",
-    icon: "kubernetes",
-    tag: ["DevOps"],
-  },
+  { name: "NestJS", icon: "nest", tag: ["Backend"], url: "https://nestjs.com" },
+  { name: "NodeJS", icon: "nodejs", tag: ["Backend"], url: "https://nodejs.org" },
+  { name: "ExpressJS", icon: "express", tag: ["Backend"], url: "https://expressjs.com" },
+  { name: "TypeScript", icon: "typescript", tag: ["Language"], url: "https://www.typescriptlang.org" },
+  { name: "JavaScript", icon: "javascript", tag: ["Language"], url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript" },
+  { name: "Python", icon: "python", tag: ["Backend"], url: "https://www.python.org" },
+  { name: "Go", icon: "go", tag: ["Backend"], url: "https://go.dev" },
+  { name: "React", icon: "react", tag: ["Frontend"], url: "https://react.dev" },
+  { name: "Vue", icon: "vue", tag: ["Frontend"], url: "https://vuejs.org" },
+  { name: "NextJS", icon: "nextjs", tag: ["Frontend"], url: "https://nextjs.org" },
+  { name: "Tailwind", icon: "tailwind", tag: ["Frontend"], url: "https://tailwindcss.com" },
+  { name: "HTML5", icon: "html", tag: ["Frontend"], url: "https://developer.mozilla.org/en-US/docs/Web/HTML" },
+  { name: "CSS3", icon: "css", tag: ["Frontend"], url: "https://developer.mozilla.org/en-US/docs/Web/CSS" },
+  { name: "SASS", icon: "sass", tag: ["Frontend"], url: "https://sass-lang.com" },
+  { name: "Vite", icon: "vite", tag: ["Frontend"], url: "https://vite.dev" },
+  { name: "GraphQL", icon: "graphql", tag: ["Backend"], url: "https://graphql.org" },
+  { name: "REST API", icon: "api", tag: ["Backend"], url: "https://restfulapi.net" },
+  { name: "Prisma", icon: "prisma", tag: ["Database"], url: "https://www.prisma.io" },
+  { name: "PostgreSQL", icon: "postgresql", tag: ["Database"], url: "https://www.postgresql.org" },
+  { name: "MySQL", icon: "mysql", tag: ["Database"], url: "https://www.mysql.com" },
+  { name: "MongoDB", icon: "mongodb", tag: ["Database"], url: "https://www.mongodb.com" },
+  { name: "Redis", icon: "redis", tag: ["Database"], url: "https://redis.io" },
+  { name: "SQLite", icon: "sqlite", tag: ["Database"], url: "https://www.sqlite.org" },
+  { name: "Elasticsearch", icon: "elasticsearch", tag: ["Database"], url: "https://www.elastic.co" },
+  { name: "Docker", icon: "docker", tag: ["DevOps"], url: "https://www.docker.com" },
+  { name: "Kubernetes", icon: "kubernetes", tag: ["DevOps"], url: "https://kubernetes.io" },
+  { name: "Linux", icon: "linux", tag: ["DevOps"], url: "https://www.kernel.org" },
+  { name: "Nginx", icon: "nginx", tag: ["DevOps"], url: "https://nginx.org" },
+  { name: "Git", icon: "git", tag: ["DevOps"], url: "https://git-scm.com" },
+  { name: "GitHub", icon: "github", tag: ["DevOps"], url: "https://github.com" },
+  // Overflow to Page 2:
+  { name: "CI/CD", icon: "cicd", tag: ["DevOps"], url: "https://about.gitlab.com/topics/ci-cd/" },
+  { name: "AWS", icon: "aws", tag: ["Cloud"], url: "https://aws.amazon.com" },
+  { name: "Cloudflare", icon: "cloudflare", tag: ["Cloud"], url: "https://www.cloudflare.com" },
+  { name: "Kafka", icon: "kafka", tag: ["Backend"], url: "https://kafka.apache.org" },
+  { name: "RabbitMQ", icon: "rabbitmq", tag: ["Backend"], url: "https://www.rabbitmq.com" },
+  { name: "WebSockets", icon: "websocket", tag: ["Backend"], url: "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API" },
 ];
 
 export const skills: string[] = defaultSkills.map((s) => s.name);

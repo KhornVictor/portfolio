@@ -29,6 +29,8 @@ export interface Skill {
   name: string;
   icon: string;
   tag: string[];
+  url?: string;
+  website?: string;
 }
 
 export type Skills = Skill[];
