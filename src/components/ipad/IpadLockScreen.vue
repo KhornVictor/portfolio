@@ -88,20 +88,7 @@ function cyclePhase() {
       </div>
 
       <!-- Animated Padlock / Face ID Icon -->
-      <div
-        class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md border border-white/15 transition-transform"
-        :class="{ 'scale-110 border-emerald-400 bg-emerald-500/20': isUnlocking }"
-      >
-        <svg v-if="!isUnlocking" viewBox="0 0 24 24" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-        </svg>
-        <svg v-else viewBox="0 0 24 24" class="w-3.5 h-3.5 text-emerald-400 animate-bounce" fill="none" stroke="currentColor" stroke-width="2.5">
-          <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-          <path d="M7 11V7a5 5 0 0 1 9.9-1" />
-        </svg>
-        <span class="text-[10px] font-mono text-white/90">{{ isUnlocking ? 'Unlocked' : 'Face ID' }}</span>
-      </div>
+      
 
       <!-- Right: Wallpaper time cycle badge & Battery -->
       <div class="flex items-center gap-2">
@@ -110,7 +97,7 @@ function cyclePhase() {
           title="Click to cycle dynamic wallpaper time of day (macOS style)"
           @click.stop="cyclePhase"
         >
-          <span>🕒</span>
+          <i class="fas fa-sync-alt"></i>
           <span>{{ currentPhaseLabel }}</span>
         </button>
 
@@ -140,46 +127,6 @@ function cyclePhase() {
       >
         {{ currentTime }}
       </h1>
-
-      <!-- Lock Screen Widgets Row -->
-      <div class="flex flex-wrap items-center justify-center gap-2.5 pt-2">
-        <!-- Widget 1: Battery status -->
-        <div class="px-3 py-1.5 rounded-xl bg-black/35 backdrop-blur-xl border border-white/15 flex items-center gap-2 text-[11px] shadow-lg">
-          <div class="w-4 h-4 rounded-full border-2 border-emerald-400 flex items-center justify-center">
-            <div class="w-1.5 h-1.5 rounded-full bg-emerald-400"></div>
-          </div>
-          <span class="font-semibold text-white">iPad 100%</span>
-        </div>
-
-        <!-- Widget 2: Dev Status -->
-        <div class="px-3 py-1.5 rounded-xl bg-black/35 backdrop-blur-xl border border-white/15 flex items-center gap-2 text-[11px] shadow-lg">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span class="font-semibold text-white">Available for Hire</span>
-        </div>
-
-        <!-- Widget 3: Tech Ecosystem -->
-        <div class="px-3 py-1.5 rounded-xl bg-black/35 backdrop-blur-xl border border-white/15 flex items-center gap-1.5 text-[11px] shadow-lg hidden sm:flex">
-          <span class="text-cyan-300 font-mono font-bold">⚡ 9+</span>
-          <span class="text-slate-200">Core Technologies</span>
-        </div>
-      </div>
-
-      <!-- Lock Screen Notification Banner -->
-      <div
-        class="mt-4 sm:mt-6 w-full max-w-sm bg-black/40 hover:bg-black/50 backdrop-blur-2xl rounded-2xl border border-white/20 p-3 shadow-2xl text-left transition-all hover:scale-[1.02]"
-      >
-        <div class="flex items-center justify-between text-[10px] text-slate-300 pb-1 border-b border-white/10">
-          <div class="flex items-center gap-1.5 font-bold text-white">
-            <span class="w-3.5 h-3.5 rounded bg-zinc-800 flex items-center justify-center text-[8px] border border-white/20">KV</span>
-            <span>Portfolio iPad Pro</span>
-          </div>
-          <span>now</span>
-        </div>
-        <div class="pt-1.5">
-          <div class="text-xs font-bold text-white">Interactive Developer Workstation</div>
-          <div class="text-[11px] text-slate-200 mt-0.5">Click anywhere to unlock & test functional skill apps.</div>
-        </div>
-      </div>
     </div>
 
     <!-- ========================================================= -->

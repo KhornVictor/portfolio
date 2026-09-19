@@ -335,6 +335,33 @@ const normalized = computed(() =>
       </svg>
     </div>
 
+    <!-- Arcade / Games -->
+    <div
+      v-else-if="normalized.includes('game') || normalized.includes('arcade') || normalized.includes('2048') || normalized.includes('snake')"
+      class="w-full h-full rounded-[22%] flex items-center justify-center shadow-md overflow-hidden bg-linear-to-br from-[#ff2a5f] via-[#e60067] to-[#7928ca] p-[16%]"
+    >
+      <svg viewBox="0 0 64 64" class="w-full h-full drop-shadow-md">
+        <!-- Gamepad Body -->
+        <path
+          d="M16 20h32c9 0 14 7 12 18-2 9-8 14-14 14-4 0-6-3-12-3s-8 3-12 3c-6 0-12-5-14-14-2-11 3-18 12-18z"
+          fill="#ffffff"
+        />
+        <!-- D-Pad -->
+        <rect x="19" y="30" width="4" height="12" rx="1.5" fill="#2d3748" />
+        <rect x="15" y="34" width="12" height="4" rx="1.5" fill="#2d3748" />
+        <circle cx="21" cy="36" r="1" fill="#4a5568" />
+        <!-- Action Buttons (ABXY) -->
+        <circle cx="45" cy="32" r="2.2" fill="#e53e3e" />
+        <circle cx="41" cy="36" r="2.2" fill="#ecc94b" />
+        <circle cx="49" cy="36" r="2.2" fill="#3182ce" />
+        <circle cx="45" cy="40" r="2.2" fill="#38a169" />
+        <!-- Middle Buttons -->
+        <rect x="29" y="35" width="2.5" height="1.5" rx="0.7" fill="#a0aec0" />
+        <rect x="32.5" y="35" width="2.5" height="1.5" rx="0.7" fill="#a0aec0" />
+      </svg>
+    </div>
+
+
     <!-- Victor Vision / ASCII Cam -->
 
     <!-- General / Dynamic Fallback -->

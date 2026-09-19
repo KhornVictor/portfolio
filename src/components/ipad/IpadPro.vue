@@ -10,6 +10,7 @@ import IpadWindow from "./IpadWindow.vue";
 import IpadDock from "./IpadDock.vue";
 import IpadHomeBar from "./IpadHomeBar.vue";
 import { useIpadWindowManager } from "./useIpadWindowManager";
+import { defaultSystemApps } from "./systemApps";
 import type { WallpaperPhase } from "./types";
 
 export type {
@@ -69,12 +70,17 @@ const skillList = ref<Skill[]>([]);
 watch(
   () => props.skills,
   (newSkills) => {
-    if (newSkills && newSkills.length > 0) {
-      skillList.value = [...newSkills];
-    }
+    const rawSkills = newSkills && newSkills.length > 0 ? newSkills : [];
+    // Include system applications alongside skills on the iPad Home Screen
+    const existingNames = new Set(rawSkills.map((s) => s.name.toLowerCase()));
+    const systemAppsToAdd = defaultSystemApps.filter(
+      (sys) => !existingNames.has(sys.name.toLowerCase()),
+    );
+    skillList.value = [...systemAppsToAdd, ...rawSkills];
   },
   { immediate: true },
 );
+
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(skillList.value.length / 30)),

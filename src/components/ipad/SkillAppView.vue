@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import type { Skill } from "../../service/portfolio.service";
 import SkillIcon from "./SkillIcon.vue";
 import { getSkillWebsite } from "./skillWebsites";
+import { notes as portfolioNotes } from "../../data/portfolio";
 
 const props = defineProps<{
   skill:
@@ -17,14 +18,56 @@ const props = defineProps<{
   allSkills: Skill[];
 }>();
 
-defineEmits<{
+const emit = defineEmits<{
   (e: "openSkill", skillName: string): void;
   (e: "changeWallpaper", wallpaper: string): void;
   (e: "changePhase", phase: "auto" | "dawn" | "day" | "sunset" | "night"): void;
   (e: "lock"): void;
+  (e: "close"): void;
 }>();
 
-const activeTab = ref<"website" | "overview" | "architecture">("website");
+function handleBack() {
+  emit("close");
+}
+
+
+/** Check whether this app is a built-in system application that is NOT a web browser */
+function checkIsSystemNonWeb(skill: { name: string; tag?: string[]; icon?: string }): boolean {
+  const name = (skill.name || "").toLowerCase();
+  const tags = (skill.tag || []).map((t) => t.toLowerCase());
+  // Safari is a web browser app, so it retains web capabilities
+  if (name === "safari") return false;
+  return (
+    tags.includes("system") ||
+    name === "terminal" ||
+    name === "notes" ||
+    name === "settings" ||
+    name === "camera"
+  );
+}
+
+/** Remove the Architecture tab for system apps (they are tools, not software architectures) */
+function checkShowArchTab(skill: { name: string; tag?: string[]; icon?: string }): boolean {
+  const name = (skill.name || "").toLowerCase();
+  const tags = (skill.tag || []).map((t) => t.toLowerCase());
+  if (
+    tags.includes("system") ||
+    ["camera", "safari", "terminal", "notes", "settings"].includes(name)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/** If system not web, open directly into the Playground (overview) */
+function getInitialTab(skill: { name: string; tag?: string[]; icon?: string }): "website" | "overview" {
+  return checkIsSystemNonWeb(skill) ? "overview" : "website";
+}
+
+const isSystemNonWeb = computed(() => checkIsSystemNonWeb(props.skill));
+const showArchTab = computed(() => checkShowArchTab(props.skill));
+const activeTab = ref<"website" | "overview" | "architecture">(getInitialTab(props.skill));
+
 const normalized = computed(() =>
   (props.skill.icon || props.skill.name || "")
     .toLowerCase()
@@ -37,9 +80,20 @@ const iframeKey = ref(0);
 const iframeLoading = ref(true);
 const showEmbedNotice = ref(true);
 
+// -------------------------------------------------------------
+// NOTES APP STATE
+// -------------------------------------------------------------
+const selectedNoteId = ref(portfolioNotes[0]?.id || "welcome");
+const currentNote = computed(
+  () =>
+    portfolioNotes.find((n) => n.id === selectedNoteId.value) ||
+    portfolioNotes[0],
+);
+
 watch(
   () => props.skill,
   (newSkill) => {
+    activeTab.value = getInitialTab(newSkill);
     const url = getSkillWebsite(newSkill);
     websiteUrl.value = url;
     inputUrl.value = url;
@@ -49,6 +103,7 @@ watch(
   },
   { immediate: true },
 );
+
 
 function reloadIframe() {
   iframeKey.value++;
@@ -431,6 +486,26 @@ function handleTermSubmit() {
       class="h-10 px-3 bg-slate-950/90 border-b border-white/10 flex items-center justify-between text-xs backdrop-blur-md shrink-0 gap-2"
     >
       <div class="flex items-center gap-2 shrink-0">
+        <button
+          type="button"
+          class="w-6 h-6 rounded-full  hover:bg-cyan-500/35 active:scale-90 text-white hover:text-gray-100 flex items-center justify-center transition-all cursor-pointer shadow-sm group"
+          title="Back to Home Screen"
+          aria-label="Back"
+          @click="handleBack"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            class="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+        </button>
+
         <SkillIcon :name="skill.name" :icon="skill.icon" :size="20" />
         <span class="font-bold text-slate-200 tracking-wide hidden sm:inline">{{
           skill.name
@@ -492,7 +567,9 @@ function handleTermSubmit() {
 
       <!-- Right: Tab Switchers -->
       <div class="flex items-center gap-1 shrink-0">
+        <!-- Web Tab (Hidden for system apps that are not web) -->
         <button
+          v-if="!isSystemNonWeb"
           class="px-2 py-1 rounded-md transition-colors text-[10px] sm:text-[11px] font-medium flex items-center gap-1 cursor-pointer"
           :class="
             activeTab === 'website'
@@ -501,9 +578,10 @@ function handleTermSubmit() {
           "
           @click="activeTab = 'website'"
         >
-          <span>🌐</span>
-          <span>Web</span>
+        <i class="fas fa-globe"></i>
         </button>
+
+        <!-- Playground Tab -->
         <button
           class="px-2 py-1 rounded-md transition-colors text-[10px] sm:text-[11px] font-medium flex items-center gap-1 cursor-pointer"
           :class="
@@ -513,10 +591,12 @@ function handleTermSubmit() {
           "
           @click="activeTab = 'overview'"
         >
-          <span>⚡</span>
-          <span class="hidden sm:inline">Playground</span>
+        <i class="fas fa-play-circle"></i>
         </button>
+
+        <!-- Arch Tab (Removed for system apps) -->
         <button
+          v-if="showArchTab"
           class="px-2 py-1 rounded-md transition-colors text-[10px] sm:text-[11px] font-medium flex items-center gap-1 cursor-pointer"
           :class="
             activeTab === 'architecture'
@@ -525,8 +605,7 @@ function handleTermSubmit() {
           "
           @click="activeTab = 'architecture'"
         >
-          <span>📐</span>
-          <span class="hidden sm:inline">Arch</span>
+         <i class="fas fa-drafting-compass"></i>
         </button>
       </div>
     </div>
@@ -1550,33 +1629,59 @@ if (cluster.isPrimary) {
 
         <!-- 11. NOTES APP -->
         <div v-else-if="normalized.includes('note')" class="space-y-3">
-          <div
-            class="bg-amber-100/10 border border-amber-300/30 rounded-xl p-4 text-slate-200 text-xs space-y-2"
-          >
-            <h3 class="font-bold text-amber-300 text-sm">
-              Engineering Philosophy & Notes
-            </h3>
-            <p class="text-slate-300 leading-relaxed">
-              "Software engineering isn't just about writing code; it's about
-              architecting maintainable, fault-tolerant, and performant
-              distributed systems."
-            </p>
-            <ul class="list-disc list-inside space-y-1 text-slate-300 pt-2">
-              <li>
-                Strict separation of concerns via modular services & clean
-                architecture.
-              </li>
-              <li>
-                Zero-downtime deployment pipelines with Docker and Kubernetes.
-              </li>
-              <li>
-                Sub-millisecond latency caching strategies utilizing Redis.
-              </li>
-              <li>
-                Type-safety from client to database (TypeScript, NestJS,
-                Prisma/PostgreSQL).
-              </li>
-            </ul>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Notes Sidebar -->
+            <div
+              class="sm:col-span-1 bg-slate-950/70 border border-white/10 rounded-xl p-2.5 space-y-1.5"
+            >
+              <div
+                class="text-[11px] font-bold text-amber-300 px-2 py-1 flex items-center justify-between border-b border-white/10 pb-1.5"
+              >
+                <span>iCloud Notes</span>
+                <span class="text-[10px] text-slate-400 font-mono">{{ portfolioNotes.length }}</span>
+              </div>
+              <div class="space-y-1 pt-1">
+                <button
+                  v-for="n in portfolioNotes"
+                  :key="n.id"
+                  class="w-full text-left px-2.5 py-2 rounded-lg transition-all text-xs cursor-pointer block"
+                  :class="
+                    selectedNoteId === n.id
+                      ? 'bg-amber-400/20 text-amber-200 border border-amber-400/30'
+                      : 'text-slate-300 hover:bg-white/5 border border-transparent'
+                  "
+                  @click="selectedNoteId = n.id"
+                >
+                  <div class="font-bold truncate text-xs">{{ n.title }}</div>
+                  <div class="text-[10px] text-slate-400 truncate opacity-80 mt-0.5">
+                    {{ n.date }} · {{ n.body[0] }}
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Note Content -->
+            <div
+              class="sm:col-span-2 bg-slate-950/90 border border-amber-300/30 rounded-xl p-4 text-xs space-y-3 flex flex-col"
+            >
+              <div v-if="currentNote" class="space-y-3">
+                <div class="flex items-center justify-between pb-2 border-b border-white/10">
+                  <h3 class="font-bold text-amber-300 text-sm sm:text-base">
+                    {{ currentNote.title }}
+                  </h3>
+                  <span class="text-[10px] font-mono text-slate-400">{{ currentNote.date }}</span>
+                </div>
+                <div class="space-y-2 text-slate-200 leading-relaxed text-xs sm:text-[13px]">
+                  <template v-for="(line, idx) in currentNote.body" :key="idx">
+                    <p v-if="line.startsWith('- ')" class="flex gap-2 text-amber-100/90 pl-1">
+                      <span class="text-amber-400 font-bold">•</span>
+                      <span>{{ line.slice(2) }}</span>
+                    </p>
+                    <p v-else class="text-slate-300">{{ line }}</p>
+                  </template>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
