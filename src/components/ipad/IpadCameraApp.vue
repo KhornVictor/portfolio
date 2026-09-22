@@ -549,7 +549,7 @@ onUnmounted(() => {
         :class="[
           facingMode === 'user' ? 'scale-x-[-1]' : '',
           activeMode === 'portrait' ? 'blur-[1.5px]' : '',
-          activeMode === 'square' ? 'max-w-[400px] max-h-[400px] aspect-square rounded-2xl' : '',
+          activeMode === 'square' ? 'max-w-100 max-h-100 aspect-square rounded-2xl' : '',
         ]"
         :style="{
           filter: currentFilterCss,
@@ -568,7 +568,7 @@ onUnmounted(() => {
         height="500"
         class="w-full h-full object-cover transition-all duration-300"
         :class="[
-          activeMode === 'square' ? 'max-w-[400px] max-h-[400px] aspect-square rounded-2xl' : '',
+          activeMode === 'square' ? 'max-w-100 max-h-100 aspect-square rounded-2xl' : '',
         ]"
         :style="{
           filter: currentFilterCss,
